@@ -7,6 +7,11 @@ From https://www.sbert.net/docs/usage/semantic_textual_similarity.html.
 `agglomerative-clustering-algorithm-code-name.py`  
 From https://www.sbert.net/examples/applications/clustering/README.html → https://github.com/UKPLab/sentence-transformers/blob/master/examples/applications/clustering/agglomerative.py.
 
+# Image to text
+`image-to-test.py`
+Generate a short textual description of an image.
+From https://www.youtube.com/watch?v=_j7JEDWuqLE
+
 # Appendices
 Code Name words coming from https://gist.github.com/MissingNoShiny/cbb22b220a0245cb0cea98e3f59f6301 or from https://github.com/sagelga/codenames/blob/main/wordlist/fr-FR/default/wordlist.txt.  
 (The list is available for several languages in https://github.com/sagelga/codenames.)
