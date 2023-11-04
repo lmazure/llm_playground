@@ -1,0 +1,29 @@
+{ "title" : "Application",
+  "requirements": [
+    "The application should have three pages:\n- the \"Login\" page\n- the \"Welcome\" page\n- the \"Account creation\" page"
+  ],
+  "parts": [
+    { "title" : "\"Login creation\" page",
+      "requirements": [
+        "The \"Login\" page should contain:\n- a \"login\" field\n- a \"password\" field\n- a \"submit\" button\n- a \"Create account\" button",
+        "The \"submit\" button should be enabled if and only if both the \"login\" field and the \"password\" field are filled.",
+        "If the user clicks on submit and the value of the \"login\" field and the \"password\" field correspond to an existing username / password or to an exiting email / password, the \"Welcome\" page should be displayed. Otherwise, the \"Login\" page should be still display, but with an \"Invalid credentials.\" message.",
+        "If the user clicks on the \"Create account\" link, then the \"Account creation\" page should be displayed."
+      ]
+    },
+    { "title" : "\"Account creation\" page",
+      "requirements": [
+        "The \"Account creation\" page should contain:\n- a \"first name\" field\n- a \"last name\" field\n- a \"user name\" field\n- an \"email\" field\n- a \"password\" field\n- a \"repeat password\" field\n- a \"submit\" button",
+        "The \"submit\" button should be enabled if and only if all fields are filled.",
+        "The characters typed in both the \"password\" field and the \"repeat password\" field must be displayed as black dots.",
+        "When the user clicks on the \"submit\" button, it the values of the \"password\" field and the \"repeat password\" field are not equal, then the  \"Account creation\" page should be still displayed, but with a \"The two passwords are different.\" message.",
+        "When the user clicks on the \"submit\" button, if the provided username contains characters other than digits, lowercase letters, and uppercase letters, then the  \"Account creation\" page should be still displayed, but with a \"The username can contain only letters or digits.\" message.",
+        "When the user clicks on the \"submit\" button, if the provided username contains less than five characters, then the  \"Account creation\" page should be still displayed, but with a \"The username can must be at least five characters long.\" message.",
+        "When the user clicks on the \"submit\" button, if the provided password does not contain at least six characters, with at least a lowercase letter, at least an uppercase latter, and at least a digit, then the  \"Account creation\" page should be still displayed, but with a \"The password must contain at least six character, at least a lowercase letter, at least an uppercase latter, and at least a digit.\" message.",
+        "When the user clicks on the \"submit\" button, if the provided username is already used by an exiting account, then the  \"Account creation\" page should be still displayed, but with a \"This username is already used. Pick another one.\" message.",
+        "When the user clicks on the \"submit\" button, if the provided email does not comply with RFC 5322, then the  \"Account creation\" page should be still displayed, but with a \"Invalid email.\" message.",
+        "When the user clicks on the \"submit\" button, if the provided email is already used by an exiting account, then the  \"Account creation\" page should be still displayed, but with a \"This email is already used.\" message."
+      ]
+    }
+  ]
+}
