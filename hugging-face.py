@@ -5,6 +5,8 @@ import json
 from html import escape
 from flask import Flask, request
 
+# ----- LLM request handling
+
 load_dotenv(find_dotenv())
 token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
@@ -18,34 +20,62 @@ def query(payload, token):
     response.raise_for_status()
     return response.json()
 
-system_message = """You are an expert on manual software testing.
+def build_prompt(requirement):
+    system_message = """You are an expert on manual software testing.
 You will be provided with a requirement, you are in charge to describe the test cases necessary to validate this specific requirement.
 You must provide the test cases formatted in JSON as a JSON array whose each element is defined with three text fields defining one test case: "title", "action", and "expected_result".
 Your answer must not contain anything else that the JSON."""
 
-prompt = """
-On the "Login" page, if the user clicks on submit and the value of the "login" field and the "password" field correspond to an existing usernname / password or to an exiting email / password, the "Welcome" page should be displayed. Otherwise, the "Login" page should be still display, but with an "Invalid credentials." message.
-"""
-
-prompt_template=f'''<|im_start|>system
+    prompt_template=f'''<|im_start|>system
 {system_message}<|im_end|>
 <|im_start|>user
-{prompt}<|im_end|>
+Write a test case for the following requirement:
+{requirement}<|im_end|>
 <|im_start|>assistant
 '''
+    
+    return prompt_template
 
-payload = {
-    "inputs": prompt_template,
+
+def call_llm(token, query, build_prompt, requirement):
+    prompt = build_prompt(requirement)
+
+    payload = {
+    "inputs": prompt,
     "parameters": {
         "return_full_text": False,
         "max_new_tokens": 1024
+        }
     }
-}
 
-#data = query(payload, token)
-#print(data[0]['generated_text'])
+    print(f"requirement={requirement}", flush=True)
+    print(f"prompt={prompt}", flush=True)
+    data = query(payload, token)
+    test = data[0]['generated_text']
+    print(">>>", flush=True)
+    print(test, flush=True)
+    print("<<<", flush=True)
 
 
+# ----- Spec file loading
+
+def build_requirement_list(spec):
+    """
+    Build a list of requirements from a given specification.
+    
+    Parameters:
+        spec (dict): The specification from which to build the requirements list.
+    
+    Returns:
+        tuple: A tuple containing the list of requirements and the updated increment value.
+    """
+    list = []
+    for requirement in spec['requirements']:
+        list.append(requirement['text'])
+    if 'parts' in spec:
+        for part in spec['parts']:
+            list.extend(build_requirement_list(part))
+    return list
 
 def read_spec_file(spec_file):
     try:
@@ -63,6 +93,9 @@ def read_spec_file(spec_file):
 
 spec_file = 'specs.json'
 spec = read_spec_file(spec_file)
+requirement_list = build_requirement_list(spec)
+
+# ----- Generation of the HTML form
 
 def convert_string_to_html(str):
     s = escape(str)
@@ -117,7 +150,7 @@ def generate_html(spec):
           </head>
           <body>
             <form>
-            {convert_to_html(spec, 1)[0]}
+            {convert_to_html(spec, 0)[0]}
             <button type="button" onclick="submitForm()">Submit</button>
           </form> 
         </body>
@@ -129,16 +162,22 @@ html_content = generate_html(spec)
 with open('data.html', 'w') as f:
     f.write(html_content)
 
+# Open the HTML file in the default web browser
 os.startfile('data.html')
+
+
+# ----- Start the server
 
 app = Flask(__name__)
 
 @app.route('/submit', methods=['POST'])
 def submit():
     print("Request received", flush=True)
-    selected_items = request.form.getlist('selectedItems')
-    selected_items = [int(item) for item in json.loads(selected_items[0])]
-    print(selected_items)
+    payload = request.form.getlist('selectedItems')
+    ids = [int(item) for item in json.loads(payload[0])]
+    print(ids)
+    requirements = [requirement_list[id] for id in ids]
+    call_llm(token, query, build_prompt, requirements[0])
     return 'Request successful'
 
 if __name__ == '__main__':
