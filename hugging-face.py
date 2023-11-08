@@ -44,8 +44,27 @@ payload = {
 #data = query(payload, token)
 #print(data[0]['generated_text'])
 
-with open('requirements.json', 'r') as file:
-    spec = json.load(file)
+
+
+def read_spec_file(spec_file):
+    try:
+    # Open the JSON file
+        with open(spec_file) as file:
+        # Load the JSON data
+            return json.load(file)
+
+    except FileNotFoundError:
+        print(f"The file {spec_file} does not exist.")
+        exit(1)
+    except json.JSONDecodeError:
+        print(f"The file {spec_file} contains invalid JSON.")
+        exit(1)
+    except Exception as e:
+        print(f"An error occurred while reading {spec_file}:", str(e))
+        exit(1)
+
+spec_file = 'specs.json'
+spec = read_spec_file(spec_file)
 
 def convert_string_to_html(str):
     s = escape(str)
@@ -67,7 +86,7 @@ def convert_to_html(spec):
 def generate_html(spec):
     html = "<html>\n"
     html += "<head>\n"
-    html += "<title>My Page</title>\n"
+    html += "<title>Test case generation</title>\n"
     html += "</head>\n"
     html += "<body>\n"
     html += convert_to_html(spec)

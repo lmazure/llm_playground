@@ -1,2 +1,5 @@
 .env
 .venv/
+
+# ignore generated HTML files
+*.html
