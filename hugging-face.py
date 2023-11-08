@@ -3,6 +3,7 @@ import os
 import requests
 import json
 from html import escape
+from flask import Flask, request
 
 load_dotenv(find_dotenv())
 token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
@@ -68,10 +69,12 @@ def convert_string_to_html(str):
     return s.replace('\n', '<br>')
 
 def convert_to_html(spec):
+    incr = 1
     html = f"<h1>{convert_string_to_html(spec['title'])}</h1>\n"
     html += "<ul>\n"
     for requirement in spec['requirements']:
-        html += f"<li>{convert_string_to_html(requirement['id'])} - {convert_string_to_html(requirement['text'])}</li>\n"
+        html += f"<li><input type='checkbox' id='{incr}'>{convert_string_to_html(requirement['id'])} - {convert_string_to_html(requirement['text'])}</li>\n"
+        incr += 1
     if 'parts' in spec:
         for part in spec['parts']:
             html += f"<li>{convert_to_html(part)}</li>"
@@ -79,12 +82,35 @@ def convert_to_html(spec):
     return html
 
 def generate_html(spec):
-    html = "<html>\n"
-    html += "<head>\n"
-    html += "<title>Test case generation</title>\n"
-    html += "</head>\n"
-    html += "<body>\n"
+    html = """
+    <html>
+      <head>
+        <title>Test case generation</title>
+            <script>
+        function submitForm() {
+            var selectedItems = [];
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            for (var i = 0; i < checkboxes.length; i++) {
+                selectedItems.push(checkboxes[i].id);
+            }
+            var request = new XMLHttpRequest();
+            request.open('POST', 'http://127.0.0.1:5000/submit');
+            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            request.onreadystatechange = function() {
+                if (request.readyState === 4 && request.status === 200) {
+                    alert('Request successful');
+                }
+            };
+            request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
+        }
+    </script>
+      </head>
+      <body>
+        <form>"""
     html += convert_to_html(spec)
+    html +=  """
+<button type="button" onclick="submitForm()">Submit</button>
+</form>"""
     html += "</body>\n"
     html += "</html>\n"
     return html
@@ -96,3 +122,16 @@ with open('data.html', 'w') as f:
     f.write(html_content)
 
 os.startfile('data.html')
+
+app = Flask(__name__)
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    print("Request received", flush=True)
+    selected_items = request.form.getlist('selectedItems')
+    selected_items = [int(item) for item in json.loads(selected_items[0])]
+    print(selected_items)
+    return 'Request successful'
+
+if __name__ == '__main__':
+    app.run()
