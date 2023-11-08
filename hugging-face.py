@@ -48,11 +48,8 @@ payload = {
 
 def read_spec_file(spec_file):
     try:
-    # Open the JSON file
         with open(spec_file) as file:
-        # Load the JSON data
             return json.load(file)
-
     except FileNotFoundError:
         print(f"The file {spec_file} does not exist.")
         exit(1)
@@ -60,7 +57,7 @@ def read_spec_file(spec_file):
         print(f"The file {spec_file} contains invalid JSON.")
         exit(1)
     except Exception as e:
-        print(f"An error occurred while reading {spec_file}:", str(e))
+        print(f"An error occurred while reading {spec_file}: ", str(e))
         exit(1)
 
 spec_file = 'specs.json'
@@ -74,12 +71,10 @@ def convert_to_html(spec):
     html = f"<h1>{convert_string_to_html(spec['title'])}</h1>\n"
     html += "<ul>\n"
     for requirement in spec['requirements']:
-        html += f"<li>{convert_string_to_html(requirement)}</li>\n"
+        html += f"<li>{convert_string_to_html(requirement['id'])} - {convert_string_to_html(requirement['text'])}</li>\n"
     if 'parts' in spec:
         for part in spec['parts']:
-            html += f"<li>"
-            html += convert_to_html(part)
-            html += f"</li>"
+            html += f"<li>{convert_to_html(part)}</li>"
     html += "</ul>\n"
     return html
 
