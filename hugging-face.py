@@ -68,8 +68,7 @@ def convert_string_to_html(str):
     s = escape(str)
     return s.replace('\n', '<br>')
 
-def convert_to_html(spec):
-    incr = 1
+def convert_to_html(spec, incr):
     html = f"<h1>{convert_string_to_html(spec['title'])}</h1>\n"
     html += "<ul>\n"
     for requirement in spec['requirements']:
@@ -77,9 +76,11 @@ def convert_to_html(spec):
         incr += 1
     if 'parts' in spec:
         for part in spec['parts']:
-            html += f"<li>{convert_to_html(part)}</li>"
+            h, i = convert_to_html(part, incr)
+            html += f"<li>{h}</li>\n"
+            incr = i
     html += "</ul>\n"
-    return html
+    return html, incr
 
 def generate_html(spec):
     """
@@ -116,7 +117,7 @@ def generate_html(spec):
           </head>
           <body>
             <form>
-            {convert_to_html(spec)}
+            {convert_to_html(spec, 1)[0]}
             <button type="button" onclick="submitForm()">Submit</button>
           </form> 
         </body>
