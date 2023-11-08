@@ -82,38 +82,45 @@ def convert_to_html(spec):
     return html
 
 def generate_html(spec):
-    html = """
-    <html>
-      <head>
-        <title>Test case generation</title>
+    """
+    Generates an HTML form with checkboxes based on the given specification.
+
+    Parameters:
+    - spec (dict): The specification for generating the HTML form.
+
+    Returns:
+    - str: The generated HTML form as a string.
+    """
+    return f"""
+      <html>
+        <head>
+          <title>Test case generation</title>
             <script>
-        function submitForm() {
-            var selectedItems = [];
-            var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            for (var i = 0; i < checkboxes.length; i++) {
-                selectedItems.push(checkboxes[i].id);
-            }
-            var request = new XMLHttpRequest();
-            request.open('POST', 'http://127.0.0.1:5000/submit');
-            request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            request.onreadystatechange = function() {
-                if (request.readyState === 4 && request.status === 200) {
-                    alert('Request successful');
-                }
-            };
-            request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
-        }
-    </script>
-      </head>
-      <body>
-        <form>"""
-    html += convert_to_html(spec)
-    html +=  """
-<button type="button" onclick="submitForm()">Submit</button>
-</form>"""
-    html += "</body>\n"
-    html += "</html>\n"
-    return html
+              function submitForm() {{
+                var selectedItems = [];
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                for (var i = 0; i < checkboxes.length; i++) {{
+                    selectedItems.push(checkboxes[i].id);
+                }}
+                var request = new XMLHttpRequest();
+                request.open('POST', 'http://127.0.0.1:5000/submit');
+                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                request.onreadystatechange = function() {{
+                    if (request.readyState === 4 && request.status === 200) {{
+                        alert('Request successful');
+                    }}
+                }};
+                request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
+              }}
+            </script>
+          </head>
+          <body>
+            <form>
+            {convert_to_html(spec)}
+            <button type="button" onclick="submitForm()">Submit</button>
+          </form> 
+        </body>
+      </html>"""
 
 html_content = generate_html(spec)
 
