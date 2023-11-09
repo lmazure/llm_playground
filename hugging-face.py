@@ -3,8 +3,9 @@ import os
 import requests
 import json
 from html import escape
-from flask import Flask, request
+from flask import Flask, Response, request
 
+   
 # ----- LLM request handling
 
 load_dotenv(find_dotenv())
@@ -17,7 +18,13 @@ API_URL = "https://api-inference.huggingface.co/models/" + model # see https://h
 def query(payload, token):
     headers = {"Authorization": f"Bearer {token}"}
     response = requests.post(API_URL, headers=headers, json=payload)
-    response.raise_for_status()
+    try:
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        error_message = response.text
+        print(f"Request failed with error: {error_message}")
+        # Handle the error or raise an exception
+        raise Exception("An error occurred")
     return response.json()
 
 def build_prompt(requirement):
@@ -29,7 +36,7 @@ Your answer must not contain anything else that the JSON."""
     prompt_template=f'''<|im_start|>system
 {system_message}<|im_end|>
 <|im_start|>user
-Write a test case for the following requirement:
+Write test cases for the following requirement:
 {requirement}<|im_end|>
 <|im_start|>assistant
 '''
@@ -55,6 +62,7 @@ def call_llm(token, query, build_prompt, requirement):
     print(">>>", flush=True)
     print(test, flush=True)
     print("<<<", flush=True)
+    return json.loads(test)
 
 
 # ----- Spec file loading
@@ -140,9 +148,13 @@ def generate_html(spec):
                 request.open('POST', 'http://127.0.0.1:5000/submit');
                 request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 request.onreadystatechange = function() {{
-                    if (request.readyState === 4 && request.status === 200) {{
-                        alert('Request successful');
-                    }}
+                    if (request.readyState === 4 &&
+                        (request.status === 0 || request.status === 200)) {{ // In local files, status is 0 upon success in Mozilla Firefox
+                           var responseText = request.responseText;
+                          var jsonResponse = JSON.parse(responseText);
+                          alert(jsonResponse);
+                          document.body.innerHTML += JSON.stringify(jsonResponse);
+                        }}
                 }};
                 request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
               }}
@@ -177,8 +189,13 @@ def submit():
     ids = [int(item) for item in json.loads(payload[0])]
     print(ids)
     requirements = [requirement_list[id] for id in ids]
-    call_llm(token, query, build_prompt, requirements[0])
-    return 'Request successful'
+    try:
+        tests = call_llm(token, query, build_prompt, requirements[0])
+    except Exception as e:
+        return Response(f"Internal error {e} ", status=500)
+    response = Response(json.dumps(tests), mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 if __name__ == '__main__':
     app.run()
