@@ -3,7 +3,7 @@ import os
 import requests
 import json
 from html import escape
-from flask import Flask, Response, request
+from flask import Flask, Response, jsonify, request
 
    
 # ----- LLM request handling
@@ -100,82 +100,11 @@ def read_spec_file(spec_file):
         exit(1)
 
 spec_file = 'specs.json'
-spec = read_spec_file(spec_file)
-requirement_list = build_requirement_list(spec)
-
-# ----- Generation of the HTML form
-
-def convert_string_to_html(str):
-    s = escape(str)
-    return s.replace('\n', '<br>')
-
-def convert_to_html(spec, incr):
-    html = f"<h1>{convert_string_to_html(spec['title'])}</h1>\n"
-    html += "<ul>\n"
-    for requirement in spec['requirements']:
-        html += f"<li><input type='checkbox' id='{incr}'>{convert_string_to_html(requirement['id'])} - {convert_string_to_html(requirement['text'])}</li>\n"
-        incr += 1
-    if 'parts' in spec:
-        for part in spec['parts']:
-            h, i = convert_to_html(part, incr)
-            html += f"<li>{h}</li>\n"
-            incr = i
-    html += "</ul>\n"
-    return html, incr
-
-def generate_html(spec):
-    """
-    Generates an HTML form with checkboxes based on the given specification.
-
-    Parameters:
-    - spec (dict): The specification for generating the HTML form.
-
-    Returns:
-    - str: The generated HTML form as a string.
-    """
-    return f"""
-      <html>
-        <head>
-          <title>Test case generation</title>
-            <script>
-              function submitForm() {{
-                var selectedItems = [];
-                var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-                for (var i = 0; i < checkboxes.length; i++) {{
-                    selectedItems.push(checkboxes[i].id);
-                }}
-                var request = new XMLHttpRequest();
-                request.open('POST', 'http://127.0.0.1:5000/submit');
-                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                request.onreadystatechange = function() {{
-                    if (request.readyState === 4 &&
-                        (request.status === 0 || request.status === 200)) {{ // In local files, status is 0 upon success in Mozilla Firefox
-                           var responseText = request.responseText;
-                          var jsonResponse = JSON.parse(responseText);
-                          alert(jsonResponse);
-                          document.body.innerHTML += JSON.stringify(jsonResponse);
-                        }}
-                }};
-                request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
-              }}
-            </script>
-          </head>
-          <body>
-            <form>
-            {convert_to_html(spec, 0)[0]}
-            <button type="button" onclick="submitForm()">Submit</button>
-          </form> 
-        </body>
-      </html>"""
-
-html_content = generate_html(spec)
-
-# Write the HTML content to a file
-with open('data.html', 'w') as f:
-    f.write(html_content)
+specification = read_spec_file(spec_file)
+requirement_list = build_requirement_list(specification)
 
 # Open the HTML file in the default web browser
-os.startfile('data.html')
+os.startfile('main.html')
 
 
 # ----- Start the server
@@ -194,6 +123,12 @@ def submit():
     except Exception as e:
         return Response(f"Internal error {e} ", status=500)
     response = Response(json.dumps(tests), mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/spec', methods=['GET'])
+def spec():
+    response = Response(json.dumps(specification), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 

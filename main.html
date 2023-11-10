@@ -1,0 +1,101 @@
+
+      <html>
+        <head>
+          <title>Test case generation</title>
+            <script>
+              function submitForm() {
+                var selectedItems = [];
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                for (var i = 0; i < checkboxes.length; i++) {
+                    selectedItems.push(checkboxes[i].id);
+                }
+                var request = new XMLHttpRequest();
+                request.open('POST', 'http://127.0.0.1:5000/submit');
+                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                request.onreadystatechange = function() {
+                    if (request.readyState === 4 &&
+                        (request.status === 0 || request.status === 200)) { // In local files, status is 0 upon success in Mozilla Firefox
+                           var responseText = request.responseText;
+                          var jsonResponse = JSON.parse(responseText);
+                          alert(jsonResponse);
+                          document.body.innerHTML += JSON.stringify(jsonResponse);
+                        }
+                };
+                request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
+              }
+            </script>
+            <script>
+              function insert_spec(node, specification, incr) {
+                var h1 = document.createElement('h1');
+                h1.textContent = specification['title'];
+                node.appendChild(h1);
+                var ul = document.createElement('ul');
+                node.appendChild(ul);
+    for (var i = 0; i < specification['requirements'].length; i++) {
+        var requirement = specification['requirements'][i];
+        var li = document.createElement('li');
+        ul.appendChild(li);
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = incr;
+        li.appendChild(checkbox);
+        var text = document.createTextNode(requirement['id'] + " - ");
+        li.appendChild(text);
+        var lines = requirement['text'].split('\n');
+
+// Iterate over the lines and create text nodes and <br> elements
+for (var j = 0; j < lines.length; j++) {
+    // Create a text node for each line
+    var lineNode = document.createTextNode(lines[j]);
+    li.appendChild(lineNode);
+
+    // If it's not the last line, create a <br> element
+    if (j < lines.length - 1) {
+        var br = document.createElement('br');
+        li.appendChild(br);
+    }
+}
+        incr += 1;
+    }
+    if ('parts' in specification) {
+        for (var i = 0; i < specification['parts'].length; i++) {
+            var part = specification['parts'][i];
+            var li = document.createElement('li');
+        ul.appendChild(li);
+        incr = insert_spec(li, part, incr);
+        }
+    }
+    return incr;
+}
+
+
+
+              function insertSpecification(specification) {
+                var specificationElement = document.getElementById('specification');
+                var form = document.createElement('form');
+                specificationElement.appendChild(form);
+                insert_spec(specificationElement, specification, 0);
+                var button = document.createElement('button');
+                button.setAttribute('type', 'button');
+                button.setAttribute('onclick', 'submitForm()');
+                button.textContent = 'Submit';
+                specificationElement.appendChild(button);
+                }
+                window.addEventListener('load', function() {
+                    var request = new XMLHttpRequest();
+                    request.open('GET', 'http://127.0.0.1:5000/spec');
+                    request.onreadystatechange = function() {
+                        if (request.readyState === 4 && request.status === 200) {
+                            var responseText = request.responseText;
+                            var jsonResponse = JSON.parse(responseText);
+                            insertSpecification(jsonResponse);
+                        }
+                    };
+                    request.send();
+                });
+            </script>
+          </head>
+          <body>
+            <div id="specification"></div>
+         </body>
+      </html>
