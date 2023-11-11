@@ -13,6 +13,47 @@ th, td {
 }
   </style>
   <script>
+
+    // Inserts a block of test cases into the 'test-cases' element.
+    // 
+    // Parameters:
+    // - testCases: An array of test cases to be inserted.
+    // 
+    // Returns: None.
+    function insertTestCasesBlock(testCases) {
+      const testCasesElement = document.getElementById('test-cases');
+      const ul = document.createElement('ul');
+      testCasesElement.appendChild(ul);
+      for (let i = 0; i < testCases.length; i++) {
+        const testCase = testCases[i];
+        const li = document.createElement('li');
+        ul.appendChild(li);
+        const title = document.createTextNode(testCase['title']);
+        li.appendChild(title);
+        const br = document.createElement('br');
+        li.appendChild(br);
+        const table = document.createElement('table');
+        table.className = "test-cases";
+        li.appendChild(table);
+        const headers = document.createElement('tr');
+        table.appendChild(headers);
+        const actionHeader = document.createElement('th');
+        actionHeader.textContent = 'action';
+        headers.appendChild(actionHeader);
+        const resultHeader = document.createElement('th');
+        resultHeader.textContent = 'result';
+        headers.appendChild(resultHeader);
+        const row = document.createElement('tr');
+        table.appendChild(row);
+        const action = document.createElement('td');
+        action.textContent = testCase['action'];
+        row.appendChild(action);
+        const expectedResult = document.createElement('td');
+        expectedResult.textContent = testCase['expected_result'];
+        row.appendChild(expectedResult);
+      }
+    }
+
     function generateTestCases() {
       const selectedItems = [];
       const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
@@ -29,42 +70,7 @@ th, td {
       };
       request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
     }
-
-    function insertTestCasesBlock(testCases) {
-      const testCasesElement = document.getElementById('test-cases');
-      const ul = document.createElement('ul');
-      testCasesElement.appendChild(ul);
-      for (let i = 0; i < testCases.length; i++) {
-        const testCase = testCases[i];
-        const li = document.createElement('li');
-        ul.appendChild(li);
-        const title = document.createTextNode(testCase['title']);
-        li.appendChild(title);
-        const br = document.createElement('br');
-        li.appendChild(br);
-        const table = document.createElement('table');
-        table.className = "test-cases";
-        li.appendChild(table);
-        const row1 = document.createElement('tr');
-        table.appendChild(row1);
-        const cell1 = document.createElement('th');
-        cell1.textContent = 'action';
-        row1.appendChild(cell1);
-        const cell2 = document.createElement('th');
-        cell2.textContent = 'result';
-        row1.appendChild(cell2);
-        const row2 = document.createElement('tr');
-        table.appendChild(row2);
-        const cell3 = document.createElement('td');
-        cell3.textContent = testCase['action'];
-        row2.appendChild(cell3);
-        const cell4 = document.createElement('td');
-        cell4.textContent = testCase['expected_result'];
-        row2.appendChild(cell4);
-      }
-
-    }
-
+  
     // Inserts a specification into a DOM node.
 
     // Parameters:
