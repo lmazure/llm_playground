@@ -5,13 +5,13 @@
   <meta charset="UTF-8" />
   <title>Test case generation</title>
   <script>
-    function submitForm() {
-      var selectedItems = [];
-      var checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    function generateTestCases() {
+      const selectedItems = [];
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
       for (let i = 0; i < checkboxes.length; i++) {
         selectedItems.push(checkboxes[i].id);
       }
-      var request = new XMLHttpRequest();
+      const request = new XMLHttpRequest();
       request.open('POST', 'http://127.0.0.1:5000/submit');
       request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
       request.onreadystatechange = function () {
@@ -24,7 +24,17 @@
       };
       request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
     }
-    function insert_spec(node, specification, incr) {
+
+    // Inserts a specification into a DOM node.
+
+    // Parameters:
+    // - node: The DOM node into which the specification will be inserted.
+    // - specification: The specification object that contains the title, requirements, and parts.
+    // - incr: The current value of the increment used to assign unique IDs to checkboxes.
+
+    // Returns:
+    // - The updated value of incr after inserting the specification.
+    function insertSpecification(node, specification, incr) {
       const h1 = document.createElement('h1');
       h1.textContent = specification['title'];
       node.appendChild(h1);
@@ -38,20 +48,14 @@
         checkbox.type = 'checkbox';
         checkbox.id = incr;
         li.appendChild(checkbox);
-        const text = document.createTextNode(requirement['id'] + " - ");
-        li.appendChild(text);
-        const lines = requirement['text'].split('\n');
-
+        const requirement_id = document.createTextNode(requirement['id'] + " - ");
+        li.appendChild(requirement_id);
+        const requirement_text_lines = requirement['text'].split('\n');
         // Iterate over the lines and create text nodes and <br> elements
-        for (let j = 0; j < lines.length; j++) {
-          // Create a text node for each line
-          const lineNode = document.createTextNode(lines[j]);
-          li.appendChild(lineNode);
-
-          // If it's not the last line, create a <br> element
-          if (j < lines.length - 1) {
-            const br = document.createElement('br');
-            li.appendChild(br);
+        for (let j = 0; j < requirement_text_lines.length; j++) {
+          li.appendChild(document.createTextNode(requirement_text_lines[j]));
+          if (j < (requirement_text_lines.length - 1)) {
+            li.appendChild(document.createElement('br'));
           }
         }
         incr += 1;
@@ -61,33 +65,38 @@
           const part = specification['parts'][i];
           const li = document.createElement('li');
           ul.appendChild(li);
-          incr = insert_spec(li, part, incr);
+          incr = insertSpecification(li, part, incr);
         }
       }
       return incr;
     }
 
+    // Inserts a specification into the DOM.
 
+    // Parameters:
+    // - specification: The specification to be inserted.
 
-    function insertSpecification(specification) {
+    // Return: None.
+    function insertSpecificationBlock(specification) {
       const specificationElement = document.getElementById('specification');
       const form = document.createElement('form');
       specificationElement.appendChild(form);
-      insert_spec(form, specification, 0);
+      insertSpecification(form, specification, 0);
       const button = document.createElement('button');
       button.setAttribute('type', 'button');
-      button.setAttribute('onclick', 'submitForm()');
+      button.setAttribute('onclick', 'generateTestCases()');
       button.textContent = 'Generate test cases';
       form.appendChild(button);
     }
+
+    // retrieve and display the specification when page loads
     window.addEventListener('load', function () {
       const request = new XMLHttpRequest();
-      request.open('GET', 'http://127.0.0.1:5000/spec');
+      request.open('GET', 'http://127.0.0.1:5000/specification');
       request.onreadystatechange = function () {
         if ((request.readyState === 4) && (request.status === 200)) {
-          const responseText = request.responseText;
-          const jsonResponse = JSON.parse(responseText);
-          insertSpecification(jsonResponse);
+          const jsonResponse = JSON.parse(request.responseText);
+          insertSpecificationBlock(jsonResponse);
         }
       };
       request.send();

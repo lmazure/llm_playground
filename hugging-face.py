@@ -100,8 +100,8 @@ def read_spec_file(spec_file):
         exit(1)
 
 spec_file = 'specs.json'
-specification = read_spec_file(spec_file)
-requirement_list = build_requirement_list(specification)
+spec = read_spec_file(spec_file)
+requirement_list = build_requirement_list(spec)
 
 # Open the HTML file in the default web browser
 os.startfile('main.html')
@@ -126,9 +126,9 @@ def submit():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-@app.route('/spec', methods=['GET'])
-def spec():
-    response = Response(json.dumps(specification), mimetype='application/json')
+@app.route('/specification', methods=['GET'])
+def specification():
+    response = Response(json.dumps(spec), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
