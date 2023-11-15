@@ -11,7 +11,7 @@
     flex-direction: column;
 }
 
-#separator {
+.separator {
     background-color: blue;
     cursor: row-resize;
     width: 100%;
@@ -22,43 +22,48 @@
     background-color: green;
     width: 100%;
     min-width: 10px;
+    overflow: auto;
 }
 
 #second {
     background-color: red;
     width: 100%;
     min-width: 10px;
+    overflow: auto;
 }
     </style>
 </head>
 <body onload="onload()">
     <div class="splitter">
-        <div id="first">one<BR>two<BR>three<BR>four</div>
-        <div id="separator"></div>
-        <div id="second">alpha<BR>beta<BR>gamma</div>
-    </div>
+        <div id="first">one<br>two<br>three<br>four<br>five<br>six<br>seven<br>eight<br>nine<br>ten</div>
+        <div id="separator" class="separator"></div>
+        <div id="second">alpha<BR>beta<BR>gamma<br>delta<br>epsilon<br>zeta</div>
+            <div class="separator"></div>1
+            <div id="third">un<BR>deux<BR>trois<br>quatre<br>cinq<br>six</div>
+                <div class="separator"></div>
+                <div id="fourth">a<BR>b<BR>c<br>d<br>e<br>f</div>
+                </div>
 
     <script>
 function onload()
 {
-    dragElement( document.getElementById("separator"), "V" );
-}
 
-// This function is used for dragging and moving
-function dragElement( element, direction, handler )
-{
   // Two variables for tracking positions of the cursor
   const drag = { x : 0, y : 0 };
   const delta = { x : 0, y : 0 };
   /* If present, the handler is where you move the DIV from
      otherwise, move the DIV from anywhere inside the DIV */
-  handler ? ( handler.onmousedown = dragMouseDown ): ( element.onmousedown = dragMouseDown );
+  
+  const separators = document.querySelectorAll('.separator');
+        separators.forEach(separator => separator.addEventListener('mousedown', dragMouseDown));
 
   // A function that will be called whenever the down event of the mouse is raised
   function dragMouseDown( e )
   {
     drag.x = e.clientX;
     drag.y = e.clientY;
+     first = e.target.previousElementSibling;
+     second = e.target.nextElementSibling;
     document.onmousemove = onMouseMove;
     document.onmouseup = () => { document.onmousemove = document.onmouseup = null; }
   }
@@ -72,17 +77,15 @@ function dragElement( element, direction, handler )
     delta.x = currentX - drag.x;
     delta.y = currentY - drag.y;
 
-    const offsetLeft = element.offsetLeft;
-    const offsetTop = element.offsetTop;
+    const offsetLeft = e.target.offsetLeft;
+    const offsetTop = e.target.offsetTop;
 
+    console.log(e);
 
-    const first = document.getElementById("first");
-    const second = document.getElementById("second");
     let firstHeight = first.offsetHeight;
     let secondHeight = second.offsetHeight;
-    if (direction === "V" ) // Vertical
     {
-        element.style.left = offsetLeft + delta.x + "px";
+        e.target.style.left = offsetLeft + delta.x + "px";
         firstHeight += delta.y;
         secondHeight -= delta.y;
     }
@@ -90,8 +93,7 @@ function dragElement( element, direction, handler )
     drag.y = currentY;
     first.style.height = firstHeight + "px";
     second.style.height = secondHeight + "px";
-  }
-      }
+  }    }
             </script>
 </body>
 </html>
