@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resizable HTML Page</title>
+    <style>
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.separator {
+    background-color: blue;
+    cursor: row-resize;
+    width: 100%;
+    min-height: 10px;
+}
+
+.panel {
+    width: 100%;
+    min-height: 100px;
+    overflow: auto;
+}
+
+    </style>
+</head>
+<body onload="onload()">
+    <div class="container">
+        <div class="panel">one<br>two<br>three<br>four<br>five<br>six<br>seven<br>eight<br>nine<br>ten</div>
+        <div class="separator"></div>
+        <div class="panel">alpha<BR>beta<BR>gamma<br>delta<br>epsilon<br>zeta</div>
+        <div class="separator"></div>
+        <div class="panel">un<BR>deux<BR>trois<br>quatre<br>cinq<br>six</div>
+        <div class="separator"></div>
+        <div class="panel">a<BR>b<BR>c<br>d<br>e<br>f</div>
+    </div>
+
+    <script>
+function onload()
+{
+  var drag;
+  var first, second;
+
+  const separators = document.querySelectorAll('.separator');
+  separators.forEach(separator => separator.addEventListener('mousedown', dragMouseDown));
+
+  function dragMouseDown( e )
+  {
+    drag = e.clientY;
+    first = e.target.previousElementSibling;
+    second = e.target.nextElementSibling;
+    document.onmousemove = onMouseMove;
+    document.onmouseup = () => { document.onmousemove = document.onmouseup = null; }
+  }
+11
+  function onMouseMove( e )
+  {
+    const delta = e.clientY - drag;
+    drag = e.clientY;
+    first.style.height = (first.offsetHeight + delta) + "px";
+    second.style.height = (second.offsetHeight - delta) + "px";
+  }
+}
+            </script>
+</body>
+</html>
