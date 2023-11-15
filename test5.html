@@ -5,45 +5,43 @@
     <title>Resizable HTML Page</title>
     <style>
 .splitter {
-    width: 500px;
-    height: 100px;
+    width: 100%;
+    height: 100%;
     display: flex;
+    flex-direction: column;
 }
 
 #separator {
-    cursor: col-resize;
-    background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png) center center no-repeat #535353;
-    width: 10px;
-    height: 100px;
-    min-width: 10px;
+    background-color: blue;
+    cursor: row-resize;
+    width: 100%;
+    min-height: 10px;
 }
 
 #first {
     background-color: green;
-    width: 100px;
-    height: 100px;
+    width: 100%;
     min-width: 10px;
 }
 
 #second {
     background-color: red;
-    width: 390px;
-    height: 100px;
+    width: 100%;
     min-width: 10px;
 }
     </style>
 </head>
 <body onload="onload()">
     <div class="splitter">
-        <div id="first"></div>
+        <div id="first">one<BR>two<BR>three<BR>four</div>
         <div id="separator"></div>
-        <div id="second"></div>
+        <div id="second">alpha<BR>beta<BR>gamma</div>
     </div>
 
     <script>
 function onload()
 {
-    dragElement( document.getElementById("separator"), "H" );
+    dragElement( document.getElementById("separator"), "V" );
 }
 
 // This function is used for dragging and moving
@@ -80,18 +78,18 @@ function dragElement( element, direction, handler )
 
     const first = document.getElementById("first");
     const second = document.getElementById("second");
-    let firstWidth = first.offsetWidth;
-    let secondWidth = second.offsetWidth;
-    if (direction === "H" ) // Horizontal
+    let firstHeight = first.offsetHeight;
+    let secondHeight = second.offsetHeight;
+    if (direction === "V" ) // Vertical
     {
         element.style.left = offsetLeft + delta.x + "px";
-        firstWidth += delta.x;
-        secondWidth -= delta.x;
+        firstHeight += delta.y;
+        secondHeight -= delta.y;
     }
     drag.x = currentX;
     drag.y = currentY;
-    first.style.width = firstWidth + "px";
-    second.style.width = secondWidth + "px";
+    first.style.height = firstHeight + "px";
+    second.style.height = secondHeight + "px";
   }
       }
             </script>
