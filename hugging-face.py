@@ -5,6 +5,9 @@ import json
 from html import escape
 from flask import Flask, Response, jsonify, request
 
+from logger import Logger
+
+logger = Logger()
    
 # ----- LLM request handling
 
@@ -59,6 +62,7 @@ def call_llm(token, query, build_prompt, requirement):
     print(f"prompt={prompt}", flush=True)
     data = query(payload, token)
     test = data[0]['generated_text']
+    logger.log("info", test)
     print(">>>", flush=True)
     print(test, flush=True)
     print("<<<", flush=True)
@@ -116,7 +120,7 @@ def submit():
     print("Request received", flush=True)
     payload = request.form.getlist('selectedItems')
     ids = [int(item) for item in json.loads(payload[0])]
-    print(ids)
+    logger.log("info", "/submit has been called for IDs" + (''.join(map(str, ids))))
     requirements = [requirement_list[id] for id in ids]
     try:
         tests = call_llm(token, query, build_prompt, requirements[0])
@@ -128,9 +132,27 @@ def submit():
 
 @app.route('/specification', methods=['GET'])
 def specification():
+    logger.log("info", "/specification has been called")
     response = Response(json.dumps(spec), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+@app.route('/logs', methods=['GET'])
+def get_logs():
+    first_index = int(request.args.get('firstIndex'))
+    last_index = int(request.args.get('lastIndex'))
+    logs = logger.logs(first_index, last_index)
+    response = Response(json.dumps(logs), mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/lastLogIndex', methods=['GET'])
+def get_last_log_index():
+    response = Response(json.dumps(logger.lastLogIndex()), mimetype='application/json')
+    print(response, flush=True)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 if __name__ == '__main__':
+    logger.log("info", "Starting server")
     app.run()

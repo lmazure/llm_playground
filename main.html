@@ -4,16 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Test case generation</title>
-  <style>
-    table {
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      border: 1px solid black;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
   <script>
 
     // Inserts a block of test cases into the 'test-cases' element.
@@ -137,6 +128,37 @@
       form.appendChild(button);
     }
 
+
+    // Add a method that is called every 500 ms and adds text at the end of the DOM.
+    lastLogIndex = -1;
+    function avey() {
+      setInterval(function () {
+        const request = new XMLHttpRequest();
+        request.open('GET', 'http://127.0.0.1:5000/lastLogIndex');
+        request.onreadystatechange = function () {
+          if ((request.readyState === 4) && (request.status === 200)) {
+            lastIndex = parseInt(request.responseText);
+            console.log("lastindex: " + lastIndex + "  lastLogIndex: " + lastLogIndex);
+            if (lastIndex > lastLogIndex) {
+              const request2 = new XMLHttpRequest();
+              const firstIndex = lastLogIndex + 1;
+              request2.open('GET', 'http://127.0.0.1:5000/logs?firstIndex=' + firstIndex + '&lastIndex=' + lastIndex);
+              request2.onreadystatechange = function () {
+                if ((request2.readyState === 4) && (request2.status === 200)) {
+                  const newElement = document.createElement('p');
+                  newElement.textContent = request2.responseText;
+                  document.body.appendChild(newElement);
+                }
+              };
+              request2.send();
+              lastLogIndex = lastIndex;
+            }
+          };
+        }
+        request.send();
+      }, 1000);
+    }
+
     // retrieve and display the specification when page loads
     window.addEventListener('load', function () {
       const request = new XMLHttpRequest();
@@ -147,13 +169,16 @@
         }
       };
       request.send();
+      avey();
     });
   </script>
 </head>
 
 <body>
   <div id="specification"></div>
+  <div id="parameters"></div>
   <div id="test-cases"></div>
+  <div id="logs"></div>
 </body>
 
 </html>
