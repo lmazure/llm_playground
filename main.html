@@ -110,6 +110,22 @@
       return incr;
     }
 
+    function insertModelParameters(parameters) {
+      const parametersElement = document.getElementById('specification');
+      const h1 = document.createElement('h1');
+      h1.textContent = parameters['Model parameters'];
+      parametersElement.appendChild(h1);
+      const ul = document.createElement('ul');
+      parametersElement.appendChild(ul);
+      for (let i = 0; i < parameters['fields'].length; i++) {
+        const field = parameters['fields'][i];
+        const li = document.createElement('li');
+        ul.appendChild(li);
+        const name = document.createTextNode(field['name']);
+        li.appendChild(name);
+      }
+    }
+
     // Inserts a specification into the DOM.
 
     // Parameters:
@@ -169,6 +185,19 @@
         }
       };
       request.send();
+    });
+      
+    // retrieve and display the model parameters when page loads
+    window.addEventListener('load', function () {
+      const request = new XMLHttpRequest();
+      request.open('GET', 'http://127.0.0.1:5000/parameters');
+      request.onreadystatechange = function () {
+        if ((request.readyState === 4) && (request.status === 200)) {
+          insertModelParameters(JSON.parse(request.responseText));
+        }
+      };
+      request.send();
+
       avey();
     });
   </script>

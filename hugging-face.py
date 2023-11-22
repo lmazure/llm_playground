@@ -137,6 +137,16 @@ def specification():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+@app.route('/parameters', methods=['GET'])
+def parameters():
+    logger.log("info", "parameters has been called")
+    parameters = { 'fields': [ { 'name': 'foo ' },
+                               { 'name': 'bar '} ] }
+    response = Response(json.dumps(parameters), mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
 @app.route('/logs', methods=['GET'])
 def get_logs():
     first_index = int(request.args.get('firstIndex'))

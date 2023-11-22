@@ -14,6 +14,5 @@ class Logger:
         return len(self._logs) - 1
     
     def logs(self, indexFirst, indexLast):
-        print(self._logs[indexFirst:indexLast+1])
         return [ log.dto() for log in self._logs[indexFirst:indexLast+1]]
     
