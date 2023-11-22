@@ -108,7 +108,8 @@ spec = read_spec_file(spec_file)
 requirement_list = build_requirement_list(spec)
 
 # Open the HTML file in the default web browser
-os.startfile('main.html')
+htmlFile = os.path.abspath('client/main.html')
+os.startfile(htmlFile)
 
 
 # ----- Start the server
