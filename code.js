@@ -96,14 +96,14 @@ function insertSpecificationBlock(specification) {
 }
 
 function loadSpecification() {
-        const request = new XMLHttpRequest();
-        request.open('GET', 'http://127.0.0.1:5000/specification');
-        request.onreadystatechange = function () {
-            if ((request.readyState === 4) && (request.status === 200)) {
-                insertSpecificationBlock(JSON.parse(request.responseText));
-            }
-        };
-        request.send();
+    const request = new XMLHttpRequest();
+    request.open('GET', 'http://127.0.0.1:5000/specification');
+    request.onreadystatechange = function () {
+        if ((request.readyState === 4) && (request.status === 200)) {
+            insertSpecificationBlock(JSON.parse(request.responseText));
+        }
+    };
+    request.send();
 }
 
 
@@ -112,9 +112,9 @@ function loadSpecification() {
 // -----------------------------------------------------------
 
 function insertModelParameters(parameters) {
-    const parametersElement = document.getElementById('specification');
+    const parametersElement = document.getElementById('model-parameters');
     const h1 = document.createElement('h1');
-    h1.textContent = parameters['Model parameters'];
+    h1.textContent = 'Model parameters';
     parametersElement.appendChild(h1);
     const ul = document.createElement('ul');
     parametersElement.appendChild(ul);
@@ -135,6 +135,7 @@ function loadModelParameters() {
             insertModelParameters(JSON.parse(request.responseText));
         }
     };
+    request.send();
  }
 
 
@@ -236,7 +237,6 @@ function manageLogs() {
         request.onreadystatechange = function () {
             if ((request.readyState === 4) && (request.status === 200)) {
                 lastIndex = parseInt(request.responseText);
-                console.log("lastindex: " + lastIndex + "  lastLogIndex: " + lastLogIndex);
                 if (lastIndex > lastLogIndex) {
                     const request2 = new XMLHttpRequest();
                     const firstIndex = lastLogIndex + 1;
@@ -252,7 +252,7 @@ function manageLogs() {
             };
         }
         request.send();
-    }, 1000);
+    }, 10000);
 }
 
 function setupLogsTable() {

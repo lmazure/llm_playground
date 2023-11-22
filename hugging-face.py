@@ -117,7 +117,7 @@ app = Flask(__name__)
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    print("Request received", flush=True)
+    logger.log("info", "/submit has been called")
     payload = request.form.getlist('selectedItems')
     ids = [int(item) for item in json.loads(payload[0])]
     logger.log("info", "/submit has been called for IDs" + (''.join(map(str, ids))))
@@ -139,7 +139,7 @@ def specification():
 
 @app.route('/parameters', methods=['GET'])
 def parameters():
-    logger.log("info", "parameters has been called")
+    logger.log("info", "/parameters has been called")
     parameters = { 'fields': [ { 'name': 'foo ' },
                                { 'name': 'bar '} ] }
     response = Response(json.dumps(parameters), mimetype='application/json')
