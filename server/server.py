@@ -63,9 +63,6 @@ def call_llm(token, query, build_prompt, requirement):
     data = query(payload, token)
     test = data[0]['generated_text']
     logger.log("info", test)
-    print(">>>", flush=True)
-    print(test, flush=True)
-    print("<<<", flush=True)
     return json.loads(test)
 
 
@@ -141,8 +138,8 @@ def specification():
 @app.route('/parameters', methods=['GET'])
 def parameters():
     logger.log("info", "/parameters has been called")
-    parameters = { 'fields': [ { 'name': 'foo ' },
-                               { 'name': 'bar '} ] }
+    parameters = { 'fields': [ { 'key': 'return_full_text ', 'title': 'Return full text', 'type': 'boolean', 'value': False },
+                               { 'key': 'max_new_tokens ', 'title': 'Max new tokens', 'type': 'number', 'value': '1024'} ] }
     response = Response(json.dumps(parameters), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response

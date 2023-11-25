@@ -116,14 +116,38 @@ function insertModelParameters(parameters) {
     const h1 = document.createElement('h1');
     h1.textContent = 'Model parameters';
     parametersElement.appendChild(h1);
-    const ul = document.createElement('ul');
-    parametersElement.appendChild(ul);
+    const form = document.createElement('form');
+    parametersElement.appendChild(form);
     for (let i = 0; i < parameters['fields'].length; i++) {
         const field = parameters['fields'][i];
-        const li = document.createElement('li');
-        ul.appendChild(li);
-        const name = document.createTextNode(field['name']);
-        li.appendChild(name);
+        const div = document.createElement('div');
+        form.appendChild(div);
+        const label = document.createElement('label');
+        const title = document.createTextNode(field['title']);
+        label.appendChild(title);
+        div.appendChild(label);
+        switch (field['type']) {
+            case 'text': {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('value', field['value']);
+                div.appendChild(input);
+                break; }
+            case 'number': {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'number');
+                input.setAttribute('value', field['value']);
+                div.appendChild(input);
+                break; }
+            case 'boolean': {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'checkbox');
+                input.checked = field['value'];
+                div.appendChild(input);
+                break; }
+            default:
+                console.log('Unknown field type: ' + field['type']);
+        }
     }
 }
 
