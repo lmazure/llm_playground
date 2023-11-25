@@ -104,7 +104,7 @@ spec_file = 'specs.json'
 spec = read_spec_file(spec_file)
 requirement_list = build_requirement_list(spec)
 
-# Open the HTML file in the default web browser
+# Open the HTML client in the default web browser
 htmlFile = os.path.abspath('client/main.html')
 os.startfile(htmlFile)
 

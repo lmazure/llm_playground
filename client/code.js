@@ -284,14 +284,16 @@ function insertTestCasesBlock(testCases) {
 // LOGS MANAGEMENT
 // -----------------------------------------------------------
 
-// Add a method that is called every 500 ms and adds text at the end of the DOM.
-
-let logsTable = document.createElement('table');
-
-
+const logPollingDuration = 1000;
 let lastLogIndex = -1;
 
-function addLogsRows(logs) {
+/**
+ * Adds logs at the end of the logs table.
+ *
+ * @param {HTMLTableElement} logsTable - The logs table.
+ * @param {Array} logs - An array of log objects.
+ */
+function addLogsRows(logsTable, logs) {
     for (let i = 0; i < logs.length; i++) {
         const log = logs[i];
         const row = document.createElement('tr');
@@ -308,7 +310,12 @@ function addLogsRows(logs) {
     }
 }
 
-function manageLogs() {
+/**
+ * Manage logs by periodically polling the server to retrieve new logs and update the log display.
+ *
+ * @param {HTMLTableElement} logsTable - The logs table.
+ */
+function manageLogs(logsTable) {
     setInterval(function () {
         const request = new XMLHttpRequest();
         request.open('GET', 'http://127.0.0.1:5000/lastLogIndex');
@@ -321,7 +328,7 @@ function manageLogs() {
                     request2.open('GET', 'http://127.0.0.1:5000/logs?firstIndex=' + firstIndex + '&lastIndex=' + lastIndex);
                     request2.onreadystatechange = function () {
                         if ((request2.readyState === 4) && (request2.status === 200)) {
-                            addLogsRows(JSON.parse(request2.responseText));
+                            addLogsRows(logsTable, JSON.parse(request2.responseText));
                         }
                     };
                     request2.send();
@@ -330,14 +337,15 @@ function manageLogs() {
             };
         }
         request.send();
-    }, 10000);
+    }, logPollingDuration);
 }
 
-function setupLogsTable() {
+/**
+ * Build the logs table.
+ */
+function buildLogsTable() {
     const logsElement = document.getElementById('logs');
-    logsTable = document.createElement('table');
-
-    // Create table headers
+    const logsTable = document.createElement('table');
     const headers = ['Type', 'Timestamp', 'Message'];
     const headerRow = document.createElement('tr');
     headers.forEach(header => {
@@ -346,11 +354,8 @@ function setupLogsTable() {
         headerRow.appendChild(th);
     });
     logsTable.appendChild(headerRow);
-
-    // Add table to parametersElement
     logsElement.appendChild(logsTable);
-
-    manageLogs();
+    manageLogs(logsTable);
 }
 
 
@@ -362,5 +367,5 @@ window.addEventListener('load', function () {
     manageResizablePanels();
     loadSpecification();
     loadModelParameters();
-    setupLogsTable();
+    buildLogsTable();
 });
