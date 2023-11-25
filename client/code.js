@@ -106,6 +106,24 @@ function loadSpecification() {
     request.send();
 }
 
+function generateTestCases() {
+    const selectedItems = [];
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    for (let i = 0; i < checkboxes.length; i++) {
+        selectedItems.push(checkboxes[i].id);
+    }
+    const request = new XMLHttpRequest();
+    request.open('POST', 'http://127.0.0.1:5000/submit');
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    request.onreadystatechange = function () {
+        if ((request.readyState === 4) && (request.status === 200)) {
+            insertTestCasesBlock(JSON.parse(request.responseText));
+        }
+    };
+    request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
+}
+
+
 
 // -----------------------------------------------------------
 // MODEL PARAMETER MANAGEMENT
@@ -117,6 +135,7 @@ function insertModelParameters(parameters) {
     h1.textContent = 'Model parameters';
     parametersElement.appendChild(h1);
     const form = document.createElement('form');
+    form.setAttribute('id', 'model-parameters-form');
     parametersElement.appendChild(form);
     for (let i = 0; i < parameters['fields'].length; i++) {
         const field = parameters['fields'][i];
@@ -131,24 +150,39 @@ function insertModelParameters(parameters) {
                 const input = document.createElement('input');
                 input.setAttribute('type', 'text');
                 input.setAttribute('value', field['value']);
+                input.setAttribute('name', field['key']);
                 div.appendChild(input);
-                break; }
+                break;
+            }
             case 'number': {
                 const input = document.createElement('input');
                 input.setAttribute('type', 'number');
                 input.setAttribute('value', field['value']);
+                input.setAttribute('name', field['key']);
                 div.appendChild(input);
-                break; }
+                break;
+            }
             case 'boolean': {
                 const input = document.createElement('input');
                 input.setAttribute('type', 'checkbox');
                 input.checked = field['value'];
+                input.setAttribute('name', field['key']);
                 div.appendChild(input);
-                break; }
+                break;
+            }
             default:
                 console.log('Unknown field type: ' + field['type']);
         }
     }
+    const button = document.createElement('button');
+    // Add an event listener to the button to handle the click event
+    button.addEventListener('click', function (event) {
+        event.preventDefault();
+        setModelParameters();
+    });
+    form.appendChild(button);
+    const text = document.createTextNode('Set parameters');
+    button.appendChild(text);
 }
 
 function loadModelParameters() {
@@ -160,7 +194,43 @@ function loadModelParameters() {
         }
     };
     request.send();
- }
+}
+
+function setModelParameters() {
+    // Get the form element
+    const form = document.getElementById('model-parameters-form');
+    const payload = {};
+    for (const field of form.elements) {
+        if (field.name) {
+            payload[field.name] = field.value;
+            switch (field.type) {
+                case 'text': {
+                    payload[field.name] = field.value;
+                    break;
+                }
+                case 'number': {
+                    payload[field.name] = parseInt(field.value);
+                    break;
+                }
+                case 'checkbox': {
+                    payload[field.name] = field.checked;
+                    break;
+                }
+                default:
+                    console.log('Unknown field type: ' + field['type']);
+                }
+        }
+    }
+    const request = new XMLHttpRequest();
+    request.open('POST', 'http://127.0.0.1:5000/parameters');
+    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    request.onreadystatechange = function () {
+        if ((request.readyState === 4) && (request.status === 200)) {
+            console.log('Parameters set successfully');
+        }
+    };
+    request.send('parameters=' + encodeURIComponent(JSON.stringify(payload)));
+}
 
 
 // -----------------------------------------------------------
@@ -208,22 +278,6 @@ function insertTestCasesBlock(testCases) {
     }
 }
 
-function generateTestCases() {
-    const selectedItems = [];
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-    for (let i = 0; i < checkboxes.length; i++) {
-        selectedItems.push(checkboxes[i].id);
-    }
-    const request = new XMLHttpRequest();
-    request.open('POST', 'http://127.0.0.1:5000/submit');
-    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    request.onreadystatechange = function () {
-        if ((request.readyState === 4) && (request.status === 200)) {
-            insertTestCasesBlock(JSON.parse(request.responseText));
-        }
-    };
-    request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
-}
 
 
 // -----------------------------------------------------------

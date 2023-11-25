@@ -115,7 +115,7 @@ app = Flask(__name__)
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    logger.log("info", "/submit has been called")
+    logger.log("info", "POST /submit has been called")
     payload = request.form.getlist('selectedItems')
     ids = [int(item) for item in json.loads(payload[0])]
     logger.log("info", "/submit has been called for IDs" + (''.join(map(str, ids))))
@@ -130,20 +130,28 @@ def submit():
 
 @app.route('/specification', methods=['GET'])
 def specification():
-    logger.log("info", "/specification has been called")
+    logger.log("info", "GET /specification has been called")
     response = Response(json.dumps(spec), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 @app.route('/parameters', methods=['GET'])
-def parameters():
-    logger.log("info", "/parameters has been called")
+def get_parameters():
+    logger.log("info", "GET /parameters has been called")
     parameters = { 'fields': [ { 'key': 'return_full_text ', 'title': 'Return full text', 'type': 'boolean', 'value': False },
                                { 'key': 'max_new_tokens ', 'title': 'Max new tokens', 'type': 'number', 'value': '1024'} ] }
     response = Response(json.dumps(parameters), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+@app.route('/parameters', methods=['POST'])
+def set_parameters():
+    logger.log("info", "POST /parameters has been called")
+    payload = request.form.getlist('parameters')
+    print(payload, flush=True)
+    response = Response({}, mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route('/logs', methods=['GET'])
 def get_logs():
