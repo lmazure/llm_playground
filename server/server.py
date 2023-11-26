@@ -3,6 +3,7 @@ import os
 import requests
 import json
 from flask import Flask, Response, request, render_template
+import webbrowser
 
 from logger import Logger
 
@@ -104,9 +105,7 @@ spec = read_spec_file(spec_file)
 requirement_list = build_requirement_list(spec)
 
 # Open the HTML client in the default web browser
-### htmlFile = os.path.abspath('client/main.html')
-### os.startfile(htmlFile)
-
+webbrowser.open("http://127.0.0.1:5000/")
 
 # ----- Start the server
 
