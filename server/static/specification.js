@@ -13,6 +13,7 @@ import insertTestCasesBlock from './test_cases.js';
 
 // Returns:
 // - The updated value of incr after inserting the specification.
+
 function insertSpecification(node, specification, incr) {
     const h1 = document.createElement('h1');
     h1.textContent = specification['title'];
@@ -30,7 +31,6 @@ function insertSpecification(node, specification, incr) {
         const requirement_id = document.createTextNode(requirement['id'] + " - ");
         li.appendChild(requirement_id);
         const requirement_text_lines = requirement['text'].split('\n');
-        // Iterate over the lines and create text nodes and <br> elements
         for (let j = 0; j < requirement_text_lines.length; j++) {
             li.appendChild(document.createTextNode(requirement_text_lines[j]));
             if (j < (requirement_text_lines.length - 1)) {
@@ -57,7 +57,7 @@ function generateTestCases() {
         selectedItems.push(checkboxes[i].id);
     }
     const request = new XMLHttpRequest();
-    request.open('POST', 'http://127.0.0.1:5000/submit');
+    request.open('POST', '/submit');
     request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     request.onreadystatechange = function () {
         if ((request.readyState === 4) && (request.status === 200)) {
@@ -87,7 +87,7 @@ function insertSpecificationBlock(specification) {
 
 export default function loadSpecification() {
     const request = new XMLHttpRequest();
-    request.open('GET', 'http://127.0.0.1:5000/specification');
+    request.open('GET', '/specification');
     request.onreadystatechange = function () {
         if ((request.readyState === 4) && (request.status === 200)) {
             insertSpecificationBlock(JSON.parse(request.responseText));

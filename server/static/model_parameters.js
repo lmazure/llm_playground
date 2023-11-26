@@ -95,7 +95,7 @@ function setModelParameters() {
         }
     }
     const request = new XMLHttpRequest();
-    request.open('POST', 'http://127.0.0.1:5000/parameters');
+    request.open('POST', '/parameters');
     request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     request.onreadystatechange = function () {
         if ((request.readyState === 4) && (request.status === 200)) {

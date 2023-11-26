@@ -144,9 +144,8 @@ def get_parameters():
 
 @app.route('/parameters', methods=['POST'])
 def set_parameters():
-    logger.log("info", "POST /parameters has been called")
     payload = request.form.getlist('parameters')
-    print(payload, flush=True)
+    logger.log("info", "POST /parameters has been called with payload " + json.dumps(payload))
     response = Response({}, mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response

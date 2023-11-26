@@ -36,14 +36,14 @@ function addLogsRows(logsTable, logs) {
 function manageLogs(logsTable) {
     setInterval(function () {
         const request = new XMLHttpRequest();
-        request.open('GET', 'http://127.0.0.1:5000/lastLogIndex');
+        request.open('GET', '/lastLogIndex');
         request.onreadystatechange = function () {
             if ((request.readyState === 4) && (request.status === 200)) {
                 let lastIndex = parseInt(request.responseText);
                 if (lastIndex > lastLogIndex) {
                     const request2 = new XMLHttpRequest();
                     const firstIndex = lastLogIndex + 1;
-                    request2.open('GET', 'http://127.0.0.1:5000/logs?firstIndex=' + firstIndex + '&lastIndex=' + lastIndex);
+                    request2.open('GET', '/logs?firstIndex=' + firstIndex + '&lastIndex=' + lastIndex);
                     request2.onreadystatechange = function () {
                         if ((request2.readyState === 4) && (request2.status === 200)) {
                             addLogsRows(logsTable, JSON.parse(request2.responseText));
