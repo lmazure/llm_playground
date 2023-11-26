@@ -1,30 +1,4 @@
-
-/**
- * Manages the resizable page panels.
- */
-function manageResizablePanels() {
-    let drag;
-    let first, second;
-
-    const separators = document.querySelectorAll('.separator');
-    separators.forEach(separator => separator.addEventListener('mousedown', dragMouseDown));
-
-    function dragMouseDown(e) {
-        drag = e.clientY;
-        first = e.target.previousElementSibling;
-        second = e.target.nextElementSibling;
-        document.onmousemove = onMouseMove;
-        document.onmouseup = () => { document.onmousemove = document.onmouseup = null; }
-    }
-
-    function onMouseMove(e) {
-        const delta = e.clientY - drag;
-        drag = e.clientY;
-        first.style.height = (first.offsetHeight + delta) + "px";
-        second.style.height = (second.offsetHeight - delta) + "px";
-    }
-}
-
+import manageResizablePanels from './panels.js';
 
 
 // -----------------------------------------------------------
@@ -77,35 +51,6 @@ function insertSpecification(node, specification, incr) {
     return incr;
 }
 
-// Inserts a specification into the DOM.
-
-// Parameters:
-// - specification: The specification to be inserted.
-
-// Return: None.
-function insertSpecificationBlock(specification) {
-    const specificationElement = document.getElementById('specification');
-    const form = document.createElement('form');
-    specificationElement.appendChild(form);
-    insertSpecification(form, specification, 0);
-    const button = document.createElement('button');
-    button.setAttribute('type', 'button');
-    button.setAttribute('onclick', 'generateTestCases()');
-    button.textContent = 'Generate test cases';
-    form.appendChild(button);
-}
-
-function loadSpecification() {
-    const request = new XMLHttpRequest();
-    request.open('GET', 'http://127.0.0.1:5000/specification');
-    request.onreadystatechange = function () {
-        if ((request.readyState === 4) && (request.status === 200)) {
-            insertSpecificationBlock(JSON.parse(request.responseText));
-        }
-    };
-    request.send();
-}
-
 function generateTestCases() {
     const selectedItems = [];
     const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
@@ -122,6 +67,37 @@ function generateTestCases() {
     };
     request.send('selectedItems=' + encodeURIComponent(JSON.stringify(selectedItems)));
 }
+
+// Inserts a specification into the DOM.
+
+// Parameters:
+// - specification: The specification to be inserted.
+
+// Return: None.
+function insertSpecificationBlock(specification) {
+    const specificationElement = document.getElementById('specification');
+    const form = document.createElement('form');
+    specificationElement.appendChild(form);
+    insertSpecification(form, specification, 0);
+    const button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.onclick = generateTestCases;
+    button.textContent = 'Generate test cases';
+    form.appendChild(button);
+}
+
+function loadSpecification() {
+    const request = new XMLHttpRequest();
+    request.open('GET', 'http://127.0.0.1:5000/specification');
+    request.onreadystatechange = function () {
+        if ((request.readyState === 4) && (request.status === 200)) {
+            insertSpecificationBlock(JSON.parse(request.responseText));
+        }
+    };
+    request.send();
+}
+
+
 
 
 
@@ -321,7 +297,7 @@ function manageLogs(logsTable) {
         request.open('GET', 'http://127.0.0.1:5000/lastLogIndex');
         request.onreadystatechange = function () {
             if ((request.readyState === 4) && (request.status === 200)) {
-                lastIndex = parseInt(request.responseText);
+                let lastIndex = parseInt(request.responseText);
                 if (lastIndex > lastLogIndex) {
                     const request2 = new XMLHttpRequest();
                     const firstIndex = lastLogIndex + 1;

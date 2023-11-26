@@ -2,8 +2,7 @@ from dotenv import load_dotenv, find_dotenv
 import os
 import requests
 import json
-from html import escape
-from flask import Flask, Response, jsonify, request
+from flask import Flask, Response, request, render_template
 
 from logger import Logger
 
@@ -105,8 +104,8 @@ spec = read_spec_file(spec_file)
 requirement_list = build_requirement_list(spec)
 
 # Open the HTML client in the default web browser
-htmlFile = os.path.abspath('client/main.html')
-os.startfile(htmlFile)
+### htmlFile = os.path.abspath('client/main.html')
+### os.startfile(htmlFile)
 
 
 # ----- Start the server
@@ -168,6 +167,10 @@ def get_last_log_index():
     print(response, flush=True)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     logger.log("info", "Starting server")
