@@ -26,7 +26,7 @@ class Zephyr_7b_beta():
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             error_message = response.text
-            # Handle the error or raise an exception
+            self.logger.log("info", "API_URL = " + API_URL + " failed with error " + error_message)
             raise Exception("An error occurred")
         return response.json()
     
@@ -44,8 +44,7 @@ class Zephyr_7b_beta():
     <|im_start|>assistant
     '''    
         return prompt_template
-    
-    
+        
     def generate_test_cases(self, requirement):
         prompt = self.build_prompt(requirement)
         params = { f['key']:f['value'] for f in self.parameters }
@@ -53,9 +52,6 @@ class Zephyr_7b_beta():
           "inputs": prompt,
           "parameters": params
         }
-        print(f"requirement={requirement}", flush=True)
-        print(f"prompt={prompt}", flush=True)
-        print(f"payload={payload} ", flush=True)
         data = self.query(payload)
         test = data[0]['generated_text']
         return json.loads(test)
