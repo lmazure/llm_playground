@@ -7,7 +7,7 @@ import requests
 
 load_dotenv(find_dotenv())
 
-class Zephyr_7b_beta():
+class Zephyr_7b_Beta():
 
     def __init__(self, logger):
         self._model ="HuggingFaceH4/zephyr-7b-beta" # see https://huggingface.co/HuggingFaceH4/zephyr-7b-beta
@@ -19,14 +19,14 @@ class Zephyr_7b_beta():
 
     def query(self, payload):
         headers = {"Authorization": f"Bearer {self.token}"}
-        API_URL = "https://api-inference.huggingface.co/models/" + self.name()
-        self.logger.log("info", "API_URL = " + API_URL + " called with payload " + json.dumps(payload))
-        response = requests.post(API_URL, headers=headers, json=payload)
+        url = "https://api-inference.huggingface.co/models/" + self.name()
+        self.logger.log("info", "API_URL = " + url + " called with payload " + json.dumps(payload))
+        response = requests.post(url, headers=headers, json=payload)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             error_message = response.text
-            self.logger.log("info", "API_URL = " + API_URL + " failed with error " + error_message)
+            self.logger.log("info", "API_URL = " + url + " failed with error " + error_message)
             raise Exception("An error occurred")
         return response.json()
     
@@ -59,9 +59,9 @@ class Zephyr_7b_beta():
     def name(self):
         return self._model
     
-    def getParameters(self):
+    def get_parameters(self):
         return self.parameters  
     
-    def setParameters(self, parameters):
+    def set_parameters(self, parameters):
         self.parameters = parameters
     

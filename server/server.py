@@ -1,13 +1,13 @@
 import json
 from flask import Flask, Response, request, render_template
 import webbrowser
-
-from zephyr_7b_beta import Zephyr_7b_beta
+import logging
+from zephyr_7b_beta import Zephyr_7b_Beta
 
 from logger import Logger
 
 logger = Logger()
-model = Zephyr_7b_beta(logger)
+model = Zephyr_7b_Beta(logger)
 
 # ----- Spec file loading
 
@@ -47,6 +47,10 @@ spec_file = 'specs.json'
 spec = read_spec_file(spec_file)
 requirement_list = build_requirement_list(spec)
 
+# configure Flask logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 # Open the HTML client in the default web browser
 webbrowser.open("http://127.0.0.1:5000/")
 
@@ -78,7 +82,7 @@ def specification():
 
 @app.route('/parameters', methods=['GET'])
 def get_parameters():
-    data = { 'fields': model.getParameters()}
+    data = { 'fields': model.get_parameters()}
     logger.log("info", "GET /parameters has been called, answer = " + json.dumps(data))
     response = Response(json.dumps(data), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -104,7 +108,6 @@ def get_logs():
 @app.route('/lastLogIndex', methods=['GET'])
 def get_last_log_index():
     response = Response(json.dumps(logger.lastLogIndex()), mimetype='application/json')
-    print(response, flush=True)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
