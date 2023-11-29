@@ -1,0 +1,7 @@
+{ "title" : "Myers triangle",
+  "requirements": [
+    { "id": "1", "text": "The software program takes as inputs three values representing the lengths of the sides of a triangle. The program should determine and output the type(s) of triangle based on the following criteria:\n- Equilateral: All three sides have equal lengths.\n- Isosceles: Two sides have equal lengths, and the third side has a different length.\n- Scalene: All three sides have different lengths.\n- Right: The triangle forms a 90-degree angle at one corner." },
+    { "id": "1a", "text": "The program should accept three integer values as input for the side lengths." },
+    { "id": "1b", "text": "The program should output a message indicating the type of triangle: equilateral, isosceles, scalene, or right." },
+    { "id": "1c", "text": "The program should handle invalid inputs, for example non-numeric values." } ]
+}

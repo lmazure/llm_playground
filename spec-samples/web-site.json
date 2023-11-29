@@ -1,4 +1,4 @@
-{ "title" : "Application",
+{ "title" : "A web application",
   "requirements": [
     { "id": "1", "text": "The application should have three pages:\n- the \"Login\" page\n- the \"Welcome\" page\n- the \"Account creation\" page" }
   ],
