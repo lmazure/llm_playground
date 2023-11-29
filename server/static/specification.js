@@ -86,12 +86,49 @@ function insertSpecificationBlock(specification) {
 }
 
 export default function loadSpecification() {
-    const request = new XMLHttpRequest();
-    request.open('GET', '/specification');
-    request.onreadystatechange = function () {
-        if ((request.readyState === 4) && (request.status === 200)) {
-            insertSpecificationBlock(JSON.parse(request.responseText));
+    const specificationElement = document.getElementById('specification');
+    const form = document.createElement('form');
+    form.setAttribute('id', 'specification-file-form');
+    specificationElement.appendChild(form);
+    const label = document.createElement('label');
+    label.appendChild((document.createTextNode('Select specification file')));
+    form.appendChild(label);
+    const file = document.createElement('input');
+    file.setAttribute('type', 'file');
+    file.setAttribute('id', 'file-input');
+    form.appendChild(file);
+    // Add an event listener to the button to handle the click event
+    const button = document.createElement('button');
+    button.addEventListener('click', function (event) {
+        event.preventDefault();
+        loadSpecificationFile();
+    });
+    form.appendChild(button);
+    const text = document.createTextNode('Load specification');
+    button.appendChild(text);
+}
+
+function loadSpecificationFile() {
+    const fileInput = document.getElementById('file-input');
+    const file = fileInput.files[0];
+  
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+  
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', '/upload', true);
+      xhr.onload = function() {
+        // handle server response
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          insertSpecificationBlock(response);
+          console.log('File uploaded successfully.');
+          console.log('Server response:', response);
+        } else {
+          console.error('File upload failed.');
         }
-    };
-    request.send();
+      };
+      xhr.send(formData);
+    }
 }

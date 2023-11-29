@@ -1,10 +1,13 @@
 import json
-from flask import Flask, Response, request, render_template
+from flask import Flask, Response, request, render_template, jsonify
 import webbrowser
 import logging
 from zephyr_7b_beta import Zephyr_7b_Beta
 
 from logger import Logger
+
+spec = None
+requirement_list = None
 
 logger = Logger()
 model = Zephyr_7b_Beta(logger)
@@ -28,24 +31,6 @@ def build_requirement_list(spec):
         for part in spec['parts']:
             list.extend(build_requirement_list(part))
     return list
-
-def read_spec_file(spec_file):
-    try:
-        with open(spec_file) as file:
-            return json.load(file)
-    except FileNotFoundError:
-        print(f"The file {spec_file} does not exist.")
-        exit(1)
-    except json.JSONDecodeError:
-        print(f"The file {spec_file} contains invalid JSON.")
-        exit(1)
-    except Exception as e:
-        print(f"An error occurred while reading {spec_file}: ", str(e))
-        exit(1)
-
-spec_file = 'specs.json'
-spec = read_spec_file(spec_file)
-requirement_list = build_requirement_list(spec)
 
 # configure Flask logging
 log = logging.getLogger('werkzeug')
@@ -110,6 +95,29 @@ def get_last_log_index():
     response = Response(json.dumps(logger.lastLogIndex()), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    spec = get_json_from_request(request)
+    if spec:
+        requirement_list = build_requirement_list(spec)
+        response = Response(json.dumps(spec), mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+    return jsonify({'success': False, 'message': 'Unable to process the JSON file.'})
+
+def get_json_from_request(request):
+    try:
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            content = file.read().decode('utf-8')
+            return json.loads(content)
+        return None
+    except json.JSONDecodeError:
+        return None
+
+def allowed_file(filename):
+    return 'json' in filename.lower()  # Only allow JSON files
 
 @app.route('/')
 def index():
