@@ -76,7 +76,7 @@ function generateTestCases() {
 function insertSpecificationBlock(specification) {
     const specificationElement = document.getElementById('specification');
     const form = document.createElement('form');
-    specificationElement.appendChild(form);
+    specificationElement.replaceChildren(form);
     insertSpecification(form, specification, 0);
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
@@ -85,30 +85,11 @@ function insertSpecificationBlock(specification) {
     form.appendChild(button);
 }
 
-export default function loadSpecification() {
-    const specificationElement = document.getElementById('specification');
-    const form = document.createElement('form');
-    form.setAttribute('id', 'specification-file-form');
-    specificationElement.appendChild(form);
-    const label = document.createElement('label');
-    label.appendChild((document.createTextNode('Select specification file')));
-    form.appendChild(label);
-    const file = document.createElement('input');
-    file.setAttribute('type', 'file');
-    file.setAttribute('id', 'file-input');
-    form.appendChild(file);
-    // Add an event listener to the button to handle the click event
-    const button = document.createElement('button');
-    button.addEventListener('click', function (event) {
-        event.preventDefault();
-        loadSpecificationFile();
-    });
-    form.appendChild(button);
-    const text = document.createTextNode('Load specification');
-    button.appendChild(text);
-}
 
-function loadSpecificationFile() {
+function loadSpecification(event) {
+
+    event.preventDefault();
+
     const fileInput = document.getElementById('file-input');
     const file = fileInput.files[0];
   
@@ -119,16 +100,34 @@ function loadSpecificationFile() {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', '/upload', true);
       xhr.onload = function() {
-        // handle server response
         if (xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText);
-          insertSpecificationBlock(response);
-          console.log('File uploaded successfully.');
-          console.log('Server response:', response);
+          insertSpecificationBlock(JSON.parse(xhr.responseText));
         } else {
-          console.error('File upload failed.');
+          alert('File upload failed.');
         }
       };
       xhr.send(formData);
     }
+}
+
+export default function installSpecificationSelector() {
+    const specificationElement = document.getElementById('specification');
+    const form = document.createElement('form');
+    form.setAttribute('id', 'specification-file-form');
+    specificationElement.appendChild(form);
+    const label = document.createElement('label');
+    label.appendChild((document.createTextNode('Select specification file')));
+    form.appendChild(label);
+    const div = document.createElement('div');
+    form.appendChild(div);
+    const file = document.createElement('input');
+    file.setAttribute('type', 'file');
+    file.setAttribute('id', 'file-input');
+    div.appendChild(file);
+    // Add an event listener to the button to handle the click event
+    const button = document.createElement('button');
+    button.addEventListener('click', loadSpecification);
+    form.appendChild(button);
+    const text = document.createTextNode('Load specification');
+    button.appendChild(text);
 }
