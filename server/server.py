@@ -6,7 +6,6 @@ from zephyr_7b_beta import Zephyr_7b_Beta
 
 from logger import Logger
 
-spec = None
 requirement_list = None
 
 logger = Logger()
@@ -58,13 +57,6 @@ def submit():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
-@app.route('/specification', methods=['GET'])
-def specification():
-    logger.log("info", "GET /specification has been called")
-    response = Response(json.dumps(spec), mimetype='application/json')
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
-
 @app.route('/parameters', methods=['GET'])
 def get_parameters():
     data = { 'fields': model.get_parameters()}
@@ -99,8 +91,9 @@ def get_last_log_index():
 @app.route('/upload', methods=['POST'])
 def upload():
     spec = get_json_from_request(request)
+    global requirement_list
+    requirement_list = build_requirement_list(spec)
     if spec:
-        requirement_list = build_requirement_list(spec)
         response = Response(json.dumps(spec), mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
