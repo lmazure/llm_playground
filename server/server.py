@@ -47,10 +47,10 @@ def submit():
     logger.log("info", "POST /submit has been called")
     payload = request.form.getlist('selectedItems')
     ids = [int(item) for item in json.loads(payload[0])]
-    logger.log("info", "/submit has been called for IDs, request = " + (''.join(map(str, ids))))
+    logger.log("info", "/submit has been called for IDs, request = " + (', '.join(map(str, ids))))
     requirements = [requirement_list[id] for id in ids]
     try:
-        tests = model.generate_test_cases(requirements[0])
+        tests = model.generate_test_cases(requirements)
     except Exception as e:
         return Response(f"Internal error {e} ", status=500)
     response = Response(json.dumps(tests), mimetype='application/json')

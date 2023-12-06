@@ -13,7 +13,7 @@ class Zephyr_7b_Beta():
         self._model ="HuggingFaceH4/zephyr-7b-beta" # see https://huggingface.co/HuggingFaceH4/zephyr-7b-beta
         self.logger = logger
         self.parameters = [ { 'key': 'return_full_text', 'title': 'Return full text', 'type': 'boolean', 'value': False },
-                            { 'key': 'temperature', 'title': 'Temperature of the sampling operation', 'type': 'number', 'min': 0.0, 'max': 100.0, 'value': 1.0},
+                            #{ 'key': 'temperature', 'title': 'Temperature of the sampling operation', 'type': 'number', 'min': 0.0, 'max': 100.0, 'value': 1.0},
                             { 'key': 'max_new_tokens', 'title': 'Max new tokens', 'type': 'number', 'value': 1024} ]
         self.token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
@@ -29,25 +29,26 @@ class Zephyr_7b_Beta():
             error_message = response.text
             self.logger.log("info", "API_URL = " + url + " failed with error " + error_message)
             raise Exception("An error occurred")
+        print(response.text)
         return response.json()
     
-    def build_prompt(self, requirement):
+    def build_prompt(self, requirements):
         system_message = """You are an expert on manual software testing.
-    You will be provided with a requirement, you are in charge to describe the test cases necessary to validate this specific requirement.
-    You must provide the test cases formatted in JSON as a JSON array whose each element is defined with three text fields defining one test case: "title", "action", and "expected_result".
-    Your answer must not contain anything else that the JSON."""
+You will be provided with one or several requirements, you are in charge to describe the test cases necessary to validate these specific requirements.
+You must provide the test cases formatted in JSON as a JSON array whose each element is defined with three text fields defining one test case: "title", "action", and "expected_result".
+Your answer must not contain anything else that the JSON."""
     
-        prompt_template=f'''<|im_start|>system
-    {system_message}<|im_end|>
-    <|im_start|>user
-    Write test cases for the following requirement:
-    {requirement}<|im_end|>
-    <|im_start|>assistant
-    '''    
-        return prompt_template
+        prompt=f"""<|im_start|>system
+{system_message}<|im_end|>
+<|im_start|>user
+Write test cases for the following requirements:
+{'\n'.join(requirements)}<|im_end|>
+<|im_start|>assistant
+"""
+        return prompt
         
-    def generate_test_cases(self, requirement):
-        prompt = self.build_prompt(requirement)
+    def generate_test_cases(self, requirements):
+        prompt = self.build_prompt(requirements)
         params = { f['key']:f['value'] for f in self.parameters }
         payload = {
           "inputs": prompt,
