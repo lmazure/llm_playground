@@ -56,6 +56,9 @@ function generateTestCases() {
     for (let i = 0; i < checkboxes.length; i++) {
         selectedItems.push(checkboxes[i].id);
     }
+    if (selectedItems.length === 0) {
+        alert('Please select at least one requirement.');
+    }
     const request = new XMLHttpRequest();
     request.open('POST', '/submit');
     request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
