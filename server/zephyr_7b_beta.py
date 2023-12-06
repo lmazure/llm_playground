@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv, find_dotenv
 import requests
 
-# see https://huggingface.co/docs/api-inference/detailed_parameters
+# see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
 
 load_dotenv(find_dotenv())
 
@@ -13,7 +13,8 @@ class Zephyr_7b_Beta():
         self._model ="HuggingFaceH4/zephyr-7b-beta" # see https://huggingface.co/HuggingFaceH4/zephyr-7b-beta
         self.logger = logger
         self.parameters = [ { 'key': 'return_full_text', 'title': 'Return full text', 'type': 'boolean', 'value': False },
-                               { 'key': 'max_new_tokens', 'title': 'Max new tokens', 'type': 'number', 'value': 1024} ]
+                            { 'key': 'temperature', 'title': 'Temperature of the sampling operation', 'type': 'number', 'min': 0.0, 'max': 100.0, 'value': 1.0},
+                            { 'key': 'max_new_tokens', 'title': 'Max new tokens', 'type': 'number', 'value': 1024} ]
         self.token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
 
@@ -63,5 +64,11 @@ class Zephyr_7b_Beta():
         return self.parameters  
     
     def set_parameters(self, parameters):
-        self.parameters = parameters
-    
+        for parameter,value in parameters.items():
+            found = False
+            for f in self.parameters:
+                if parameter == f['key']:
+                    f['value'] = value
+                    found = True
+            if not found:
+                raise Exception(f"Unknown key: {parameter}")

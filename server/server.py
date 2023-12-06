@@ -69,6 +69,8 @@ def get_parameters():
 def set_parameters():
     payload = request.form.getlist('parameters')
     logger.log("info", "POST /parameters has been called with payload " + json.dumps(payload))
+    payload_dict = json.loads(payload[0])
+    model.set_parameters(payload_dict)
     response = Response({}, mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
