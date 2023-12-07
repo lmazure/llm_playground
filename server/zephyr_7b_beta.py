@@ -13,8 +13,8 @@ class Zephyr_7b_Beta():
         self._model ="HuggingFaceH4/zephyr-7b-beta" # see https://huggingface.co/HuggingFaceH4/zephyr-7b-beta
         self.logger = logger
         self.parameters = [ { 'key': 'return_full_text', 'title': 'Return full text', 'type': 'boolean', 'value': False },
-                            #{ 'key': 'temperature', 'title': 'Temperature of the sampling operation', 'type': 'number', 'min': 0.0, 'max': 100.0, 'value': 1.0},
-                            { 'key': 'max_new_tokens', 'title': 'Max new tokens', 'type': 'number', 'value': 1024} ]
+                            { 'key': 'temperature', 'title': 'Temperature of the sampling operation', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': 1.0},
+                            { 'key': 'max_new_tokens', 'title': 'Max new tokens', 'type': 'integer', 'value': 1024} ]
         self.token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
 
@@ -37,7 +37,7 @@ class Zephyr_7b_Beta():
         system_message = """You are an expert on manual software testing.
 You will be provided with one or several requirements, you are in charge to describe the test cases necessary to validate these specific requirements.
 You must provide the test cases formatted in JSON as a JSON array whose each element is defined with three text fields defining one test case: "title", "action", and "expected_result".
-Your answer must not contain anything else that the JSON."""
+Your answer must contain only the JSON."""
     
         prompt=f"""<|im_start|>system
 {system_message}<|im_end|>
@@ -57,8 +57,8 @@ Write test cases for the following requirements:
         }
         data = self.query(payload)
         generated_text = data[0]['generated_text']
-        print("generated_text = " + generated_text, flush=True)
-        tests = []
+        #print("generated_text = " + generated_text, flush=True)
+        #tests = []
         try:
             tests = json.loads(generated_text)
         except json.JSONDecodeError as e:

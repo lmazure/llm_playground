@@ -7,6 +7,10 @@ table {
     border: 1px solid black;
   }
   
+  input:invalid {
+    border: solid red 3px;
+  }
+  
 .container {
     width: 100%;
     height: 100%;

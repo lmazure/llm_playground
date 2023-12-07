@@ -27,11 +27,32 @@ function insertModelParameters(parameters) {
                 div.appendChild(input);
                 break;
             }
-            case 'number': {
+            case 'float': {
                 const input = document.createElement('input');
                 input.setAttribute('type', 'number');
                 input.setAttribute('value', field['value']);
                 input.setAttribute('name', field['key']);
+                if ('min' in field) {
+                    input.setAttribute('min', field['min']);
+                }
+                if ('max' in field) {
+                    input.setAttribute('max', field['max']);
+                }
+                div.appendChild(input);
+                break;
+            }
+            case 'integer': {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'number');
+                input.setAttribute('value', field['value']);
+                input.setAttribute('name', field['key']);
+                input.setAttribute('step', 1);
+                if ('min' in field) {
+                    input.setAttribute('min', field['min']);
+                }
+                if ('max' in field) {
+                    input.setAttribute('max', field['max']);
+                }
                 div.appendChild(input);
                 break;
             }
@@ -48,14 +69,20 @@ function insertModelParameters(parameters) {
         }
     }
     const button = document.createElement('button');
+    /*
     // Add an event listener to the button to handle the click event
     button.addEventListener('click', function (event) {
         event.preventDefault();
         setModelParameters();
     });
+    */
     form.appendChild(button);
     const text = document.createTextNode('Set parameters');
     button.appendChild(text);
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        setModelParameters();
+    });
 }
 
 export default function loadModelParameters() {
