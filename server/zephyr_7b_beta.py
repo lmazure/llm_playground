@@ -21,18 +21,19 @@ class Zephyr_7b_Beta():
     def query(self, payload):
         headers = {"Authorization": f"Bearer {self.token}"}
         url = "https://api-inference.huggingface.co/models/" + self.name()
-        self.logger.log("info", "API_URL = " + url + " called with payload " + json.dumps(payload))
+        self.logger.log("info", "URL = " + url + " called with payload " + json.dumps(payload))
         response = requests.post(url, headers=headers, json=payload)
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             error_message = response.text
-            self.logger.log("info", "API_URL = " + url + " failed with error " + error_message)
+            self.logger.log("error", "URL = " + url + " failed with error " + error_message)
             raise Exception("An error occurred")
-        print(response.text)
+        print("API answer = " + response.text)
         return response.json()
     
     def build_prompt(self, requirements):
+        newline = '\n'
         system_message = """You are an expert on manual software testing.
 You will be provided with one or several requirements, you are in charge to describe the test cases necessary to validate these specific requirements.
 You must provide the test cases formatted in JSON as a JSON array whose each element is defined with three text fields defining one test case: "title", "action", and "expected_result".
@@ -42,7 +43,7 @@ Your answer must not contain anything else that the JSON."""
 {system_message}<|im_end|>
 <|im_start|>user
 Write test cases for the following requirements:
-{'\n'.join(requirements)}<|im_end|>
+{newline.join(requirements)}<|im_end|>
 <|im_start|>assistant
 """
         return prompt
@@ -55,8 +56,14 @@ Write test cases for the following requirements:
           "parameters": params
         }
         data = self.query(payload)
-        test = data[0]['generated_text']
-        return json.loads(test)
+        generated_text = data[0]['generated_text']
+        print("generated_text = " + generated_text, flush=True)
+        tests = []
+        try:
+            tests = json.loads(generated_text)
+        except json.JSONDecodeError as e:
+            self.logger.log("error", f"Error parsing generated text: {e}\nThe generated text is:\n{generated_text}")
+        return tests
     
     def name(self):
         return self._model
