@@ -14,7 +14,10 @@ class Zephyr_7b_Beta():
         self.logger = logger
         self.parameters = [ { 'key': 'return_full_text', 'title': 'Return full text', 'type': 'boolean', 'value': False },
                             { 'key': 'temperature', 'title': 'Temperature of the sampling operation', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': 1.0},
-                            { 'key': 'max_new_tokens', 'title': 'Max new tokens', 'type': 'integer', 'value': 1024} ]
+                            { 'key': 'repetition_penalty', 'title': 'The more a token is used the more it is penalized to not be picked again', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': None},
+                            { 'key': 'max_new_tokens', 'title': 'Max new tokens', 'type': 'integer', 'value': 1024},
+                            { 'key': 'top_k', 'title': 'Top tokens considered within the sample operation', 'type': 'integer', 'value': None},
+                            { 'key': 'top_p', 'title': 'Tokens that are within the sample operation of text generation', 'type': 'integer', 'value': None} ]
         self.token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
 
@@ -50,7 +53,7 @@ Write test cases for the following requirements:
         
     def generate_test_cases(self, requirements):
         prompt = self.build_prompt(requirements)
-        params = { f['key']:f['value'] for f in self.parameters }
+        params = { f['key']:f['value'] for f in self.parameters if f['value'] is not None }
         payload = {
           "inputs": prompt,
           "parameters": params
@@ -80,3 +83,9 @@ Write test cases for the following requirements:
                     found = True
             if not found:
                 raise Exception(f"Unknown key: {parameter}")
+
+    def get_html_description(self):
+        return """This model is <A href='https://huggingface.co/HuggingFaceH4/zephyr-7b-beta' target='_blank'>HuggingFaceH4/zephyr-7b-beta</A>.<BR>
+Its parameters are described <A href='https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task' target='_blank'>here</A>.
+"""
+

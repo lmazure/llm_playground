@@ -3,10 +3,22 @@
 // -----------------------------------------------------------
 
 function insertModelParameters(parameters) {
+
     const parametersElement = document.getElementById('model-parameters');
+
     const h1 = document.createElement('h1');
     h1.textContent = 'Model parameters';
     parametersElement.appendChild(h1);
+
+    const description = document.createElement('div');
+    description.setAttribute('id', 'model-description');
+    description.innerHTML = parameters['html_description'];
+    parametersElement.appendChild(description);
+
+    const filler = document.createElement('div');
+    filler.innerHTML = '<br><br>';
+    parametersElement.appendChild(filler);
+
     const form = document.createElement('form');
     form.setAttribute('id', 'model-parameters-form');
     parametersElement.appendChild(form);
@@ -68,14 +80,8 @@ function insertModelParameters(parameters) {
                 console.log('Unknown field type: ' + field['type']);
         }
     }
+
     const button = document.createElement('button');
-    /*
-    // Add an event listener to the button to handle the click event
-    button.addEventListener('click', function (event) {
-        event.preventDefault();
-        setModelParameters();
-    });
-    */
     form.appendChild(button);
     const text = document.createTextNode('Set parameters');
     button.appendChild(text);

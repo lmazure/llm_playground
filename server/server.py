@@ -59,7 +59,8 @@ def submit():
 
 @app.route('/parameters', methods=['GET'])
 def get_parameters():
-    data = { 'fields': model.get_parameters()}
+    data = { 'html_description': model.get_html_description(),
+             'fields': model.get_parameters() }
     logger.log("info", "GET /parameters has been called, answer = " + json.dumps(data))
     response = Response(json.dumps(data), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
