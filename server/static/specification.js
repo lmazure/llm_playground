@@ -58,6 +58,7 @@ function generateTestCases() {
     }
     if (selectedItems.length === 0) {
         alert('Please select at least one requirement.');
+        return;
     }
     const request = new XMLHttpRequest();
     request.open('POST', '/submit');
