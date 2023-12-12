@@ -43,7 +43,7 @@ webbrowser.open("http://127.0.0.1:5000/")
 app = Flask(__name__)
 
 @app.route('/submit', methods=['POST'])
-def submit():
+def submit() -> Response:
     logger.log("info", "POST /submit has been called")
     payload = request.form.getlist('selectedItems')
     ids = [int(item) for item in json.loads(payload[0])]
@@ -58,7 +58,7 @@ def submit():
     return response
 
 @app.route('/parameters', methods=['GET'])
-def get_parameters():
+def get_parameters() -> Response:
     data = { 'html_description': model.get_html_description(),
              'fields': model.get_parameters() }
     logger.log("info", "GET /parameters has been called, answer = " + json.dumps(data))
@@ -67,7 +67,7 @@ def get_parameters():
     return response
 
 @app.route('/parameters', methods=['POST'])
-def set_parameters():
+def set_parameters() -> Response:
     payload = request.form.getlist('parameters')
     logger.log("info", "POST /parameters has been called with payload " + json.dumps(payload))
     payload_dict = json.loads(payload[0])
@@ -77,7 +77,7 @@ def set_parameters():
     return response
 
 @app.route('/logs', methods=['GET'])
-def get_logs():
+def get_logs() -> Response:
     first_index = int(request.args.get('firstIndex'))
     last_index = int(request.args.get('lastIndex'))
     logs = logger.logs(first_index, last_index)
@@ -86,13 +86,13 @@ def get_logs():
     return response
 
 @app.route('/lastLogIndex', methods=['GET'])
-def get_last_log_index():
+def get_last_log_index() -> Response:
     response = Response(json.dumps(logger.lastLogIndex()), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 @app.route('/upload', methods=['POST'])
-def upload():
+def upload() -> Response:
     spec = get_json_from_request(request)
     global requirement_list
     requirement_list = build_requirement_list(spec)
@@ -102,7 +102,7 @@ def upload():
         return response
     return jsonify({'success': False, 'message': 'Unable to process the JSON file.'})
 
-def get_json_from_request(request):
+def get_json_from_request(request) -> Response:
     try:
         file = request.files['file']
         if file and allowed_file(file.filename):
@@ -112,11 +112,11 @@ def get_json_from_request(request):
     except json.JSONDecodeError:
         return None
 
-def allowed_file(filename):
+def allowed_file(filename) -> Response:
     return 'json' in filename.lower()  # Only allow JSON files
 
 @app.route('/')
-def index():
+def index() -> Response:
     return render_template('index.html')
 
 if __name__ == '__main__':
