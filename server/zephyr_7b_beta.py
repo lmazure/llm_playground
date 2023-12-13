@@ -31,10 +31,11 @@ class Zephyr_7b_Beta():
         except requests.exceptions.HTTPError as e:
             error_message = response.text
             self.logger.log("error", url + "\nreturned error\n" + error_message)
-            raise Exception("An error occurred") from e
+            raise Exception("Model failed") from e
         except Exception as e:
             self.logger.log("error", url + "\nfailed with exception\n" + str(e))
             raise Exception("An error occurred") from e
+        # print("API answer = " + response.text)
         return response.json()
     
     def build_prompt(self, requirements):
@@ -67,7 +68,7 @@ Write test cases for the following requirements:
         try:
             tests = json.loads(generated_text)
         except json.JSONDecodeError as e:
-            self.logger.log("error", f"Error parsing generated text: {e}\nThe generated text is:\n{generated_text}")
+            self.logger.log("error", f"Error while trying to parse generated text as JSON\n{e}\nThe generated text is\n{generated_text}")
         return tests
     
     def name(self):

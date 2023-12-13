@@ -23,8 +23,12 @@ function addLogsRows(logsTable, logs) {
         timestamp.textContent = log['timestamp'];
         row.appendChild(timestamp);
         const message = document.createElement('td');
-        message.textContent = log['message'];
         row.appendChild(message);
+        const text_lines = log['message'].split('\n');
+        for (let j = 0; j < text_lines.length; j++) {
+            if (j > 0) message.appendChild(document.createElement('br'));
+            message.appendChild(document.createTextNode(text_lines[j]));
+        }
     }
 }
 
