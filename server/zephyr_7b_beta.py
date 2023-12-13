@@ -24,15 +24,17 @@ class Zephyr_7b_Beta():
     def query(self, payload):
         headers = {"Authorization": f"Bearer {self.token}"}
         url = "https://api-inference.huggingface.co/models/" + self.name()
-        self.logger.log("info", "URL = " + url + " called with payload " + json.dumps(payload))
-        response = requests.post(url, headers=headers, json=payload)
+        self.logger.log("info", url + "\nhas been called with payload\n" + json.dumps(payload))
         try:
+            response = requests.post(url, headers=headers, json=payload)
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             error_message = response.text
-            self.logger.log("error", "URL = " + url + " failed with error " + error_message)
-            raise Exception("An error occurred")
-        print("API answer = " + response.text)
+            self.logger.log("error", url + "\nreturned error\n" + error_message)
+            raise Exception("An error occurred") from e
+        except Exception as e:
+            self.logger.log("error", url + "\nfailed with exception\n" + str(e))
+            raise Exception("An error occurred") from e
         return response.json()
     
     def build_prompt(self, requirements):

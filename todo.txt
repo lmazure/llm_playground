@@ -1,4 +1,6 @@
-□ remettre en marche la remontée des stack traces
+□ add another model
+□ add model selection
+
 □ fix the improper response when several requirements are selected
-□ add HTML description (containing a pointer toward the model and toward the parameters)
+
 □ generic prompt management as in https://youtu.be/fKx_7S0SzDA?si=xgk3twJJz87NL6HS&t=329)

@@ -44,10 +44,9 @@ app = Flask(__name__)
 
 @app.route('/submit', methods=['POST'])
 def submit() -> Response:
-    logger.log("info", "POST /submit has been called")
     payload = request.form.getlist('selectedItems')
     ids = [int(item) for item in json.loads(payload[0])]
-    logger.log("info", "/submit has been called for IDs, request = " + (', '.join(map(str, ids))))
+    logger.log("info", "POST /submit\nhas been called with IDs " + (', '.join(map(str, ids))))
     requirements = [requirement_list[id] for id in ids]
     try:
         tests = model.generate_test_cases(requirements)
@@ -61,7 +60,7 @@ def submit() -> Response:
 def get_parameters() -> Response:
     data = { 'html_description': model.get_html_description(),
              'fields': model.get_parameters() }
-    logger.log("info", "GET /parameters has been called, answer = " + json.dumps(data))
+    logger.log("info", "GET /parameters\nhas been called and answered\n" + json.dumps(data))
     response = Response(json.dumps(data), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
@@ -69,7 +68,7 @@ def get_parameters() -> Response:
 @app.route('/parameters', methods=['POST'])
 def set_parameters() -> Response:
     payload = request.form.getlist('parameters')
-    logger.log("info", "POST /parameters has been called with payload " + json.dumps(payload))
+    logger.log("info", "POST /parameters\nhas been called with payload\n" + json.dumps(payload))
     payload_dict = json.loads(payload[0])
     model.set_parameters(payload_dict)
     response = Response({}, mimetype='application/json')
@@ -93,6 +92,7 @@ def get_last_log_index() -> Response:
 
 @app.route('/upload', methods=['POST'])
 def upload() -> Response:
+    logger.log("info", "POST /upload\nhas been called")
     spec = get_json_from_request(request)
     global requirement_list
     requirement_list = build_requirement_list(spec)
