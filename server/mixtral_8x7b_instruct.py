@@ -17,7 +17,7 @@ It is hosted by Together AI.
         url = "https://api.together.xyz/inference"
         token = os.getenv("TOGETHERAI_API_TOKEN")
         parameters = [ { 'key': 'temperature', 'title': 'Temperature of the sampling operation', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': 0.7},
-                       { 'key': 'repetition_penalty', 'title': 'The more a token is used the more it is penalized to not be picked again', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': None},
+                       { 'key': 'repetition_penalty', 'title': 'The more a token is used the more it is penalized to not be picked again', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': 1},
                        { 'key': 'max_tokens', 'title': 'Max tokens', 'type': 'integer', 'value': 512},
                        { 'key': 'top_k', 'title': 'Top tokens considered within the sample operation', 'type': 'integer', 'value': 50},
                        { 'key': 'top_p', 'title': 'Tokens that are within the sample operation of text generation', 'type': 'float', 'value': 0.7} ]
@@ -41,14 +41,12 @@ Write test cases for the following requirements:
         #params = { f['key']:f['value'] for f in self.parameters if f['value'] is not None }
         payload = {
             "model": self.name(),
-            "max_tokens": 512,
-            "prompt": prompt,
             "request_type": "language-model-inference",
-            "temperature": 0.7,
-            "top_p": 0.7,
-            "top_k": 50,
-            "repetition_penalty": 1
+            "prompt": prompt
         }
+        for f in self.parameters:
+            if f['value'] is not None:
+                payload[f['key']] = f['value']
         try:
             data = self.query(payload)
         except Exception as e:
