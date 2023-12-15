@@ -44,6 +44,7 @@ function insertModelParameters(parameters) {
                 input.setAttribute('type', 'number');
                 input.setAttribute('value', field['value']);
                 input.setAttribute('name', field['key']);
+                input.setAttribute('step', 0.01);
                 if ('min' in field) {
                     input.setAttribute('min', field['min']);
                 }

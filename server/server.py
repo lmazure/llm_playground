@@ -3,13 +3,15 @@ from flask import Flask, Response, request, render_template, jsonify
 import webbrowser
 import logging
 from zephyr_7b_beta import Zephyr_7b_Beta
+from mixtral_8x7b_instruct import Mixtral_8x7B_Instruct
 
 from logger import Logger
 
 requirement_list = None
 
 logger = Logger()
-model = Zephyr_7b_Beta(logger)
+modelold = Zephyr_7b_Beta(logger)
+model = Mixtral_8x7B_Instruct(logger)
 
 # ----- Spec file loading
 

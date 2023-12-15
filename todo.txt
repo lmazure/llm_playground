@@ -1,6 +1,6 @@
-□ add another model
 □ add model selection
+□ modify Zephyr prompt to always get JSON
 
-□ fix the improper response when several requirements are selected
+□ add  Google Gemini https://ai.google.dev/
 
 □ generic prompt management as in https://youtu.be/fKx_7S0SzDA?si=xgk3twJJz87NL6HS&t=329)
