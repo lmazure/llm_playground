@@ -53,6 +53,7 @@ def submit() -> Response:
     try:
         tests = model.generate_test_cases(requirements)
     except Exception as e:
+        print(str(e.with_traceback), flush=True)
         return Response(f"Internal error {e} ", status=500)
     response = Response(json.dumps(tests), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')

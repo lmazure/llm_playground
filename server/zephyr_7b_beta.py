@@ -1,41 +1,29 @@
 import json
 import os
 from dotenv import load_dotenv, find_dotenv
-import requests
+
+from base_model import Base_Model
 
 load_dotenv(find_dotenv())
 
-class Zephyr_7b_Beta():
+class Zephyr_7b_Beta(Base_Model):
 
     def __init__(self, logger):
-        self._model ="HuggingFaceH4/zephyr-7b-beta"
-        self.logger = logger
-        self.parameters = [ { 'key': 'return_full_text', 'title': 'Return full text', 'type': 'boolean', 'value': False },
-                            { 'key': 'temperature', 'title': 'Temperature of the sampling operation', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': 1.0},
-                            { 'key': 'repetition_penalty', 'title': 'The more a token is used the more it is penalized to not be picked again', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': None},
-                            { 'key': 'max_new_tokens', 'title': 'Max new tokens', 'type': 'integer', 'value': 1024},
-                            { 'key': 'top_k', 'title': 'Top tokens considered within the sample operation', 'type': 'integer', 'value': None},
-                            { 'key': 'top_p', 'title': 'Tokens that are within the sample operation of text generation', 'type': 'float', 'value': None} ]
-        self.token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
-
-
-    def query(self, payload):
-        headers = {"Authorization": f"Bearer {self.token}"}
-        url = "https://api-inference.huggingface.co/models/" + self.name()
-        self.logger.log("info", url + "\nhas been called with payload\n" + json.dumps(payload))
-        try:
-            response = requests.post(url, headers=headers, json=payload)
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            error_message = response.text
-            self.logger.log("error", url + "\nreturned error\n" + error_message)
-            raise Exception("Model failed") from e
-        except Exception as e:
-            self.logger.log("error", url + "\nfailed with exception\n" + str(e))
-            raise Exception("An error occurred") from e
-        # print("API answer = " + response.text)
-        return response.json()
-    
+        name ="HuggingFaceH4/zephyr-7b-beta"
+        description = """This model is <A href='https://huggingface.co/HuggingFaceH4/zephyr-7b-beta' target='_blank'>HuggingFaceH4/zephyr-7b-beta</A>.<BR>
+Its parameters are described <A href='https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task' target='_blank'>here</A>.<BR>
+It is hosted by 🤗 Hugging Face.
+"""
+        url = "https://api-inference.huggingface.co/models/" + name
+        token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+        parameters = [ { 'key': 'return_full_text', 'title': 'Return full text', 'type': 'boolean', 'value': False },
+                       { 'key': 'temperature', 'title': 'Temperature of the sampling operation', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': 1.0},
+                       { 'key': 'repetition_penalty', 'title': 'The more a token is used the more it is penalized to not be picked again', 'type': 'float', 'min': 0.0, 'max': 100.0, 'value': None},
+                       { 'key': 'max_new_tokens', 'title': 'Max new tokens', 'type': 'integer', 'value': 1024},
+                       { 'key': 'top_k', 'title': 'Top tokens considered within the sample operation', 'type': 'integer', 'value': None},
+                       { 'key': 'top_p', 'title': 'Tokens that are within the sample operation of text generation', 'type': 'float', 'value': None} ]
+        super().__init__(name, description, parameters, url, token, logger)
+   
     def build_prompt(self, requirements):
         newline = '\n'
         system_message = """You are an expert on manual software testing.
@@ -69,25 +57,3 @@ Write test cases for the following requirements:
             self.logger.log("error", f"Error while trying to parse generated text as JSON\n{e}\nThe generated text is\n{generated_text}")
         return tests
     
-    def name(self):
-        return self._model
-    
-    def get_parameters(self):
-        return self.parameters  
-    
-    def set_parameters(self, parameters):
-        for parameter,value in parameters.items():
-            found = False
-            for f in self.parameters:
-                if parameter == f['key']:
-                    f['value'] = value
-                    found = True
-            if not found:
-                raise Exception(f"Unknown key: {parameter}")
-
-    def get_html_description(self):
-        return """This model is <A href='https://huggingface.co/HuggingFaceH4/zephyr-7b-beta' target='_blank'>HuggingFaceH4/zephyr-7b-beta</A>.<BR>
-Its parameters are described <A href='https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task' target='_blank'>here</A>.<BR>
-It is hosted by 🤗 Hugging Face.
-"""
-

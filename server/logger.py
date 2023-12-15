@@ -8,6 +8,7 @@ class Logger:
         self._logs = []
 
     def log(self, type: str, message: str) -> None:
+        # print("### " + type + ": " + message, flush=True)
         timestamp = datetime.datetime.now()
         self._logs.append(LogEntry(type, timestamp, message))
 
