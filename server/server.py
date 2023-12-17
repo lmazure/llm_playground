@@ -1,4 +1,5 @@
 import json
+import traceback
 from flask import Flask, Response, request, render_template, jsonify
 import webbrowser
 import logging
@@ -10,8 +11,8 @@ from logger import Logger
 requirement_list = None
 
 logger = Logger()
-modelold = Zephyr_7b_Beta(logger)
-model = Mixtral_8x7B_Instruct(logger)
+model = Zephyr_7b_Beta(logger)
+modelnew = Mixtral_8x7B_Instruct(logger)
 
 # ----- Spec file loading
 
@@ -53,8 +54,9 @@ def submit() -> Response:
     try:
         tests = model.generate_test_cases(requirements)
     except Exception as e:
-        print(str(e.with_traceback), flush=True)
-        return Response(f"Internal error {e} ", status=500)
+        error_message = "Internal error:" + str(e) + "\n" + "\n".join(traceback.format_tb(e.__traceback__))
+        print(error_message, flush=True)
+        return Response(error_message, status=500)
     response = Response(json.dumps(tests), mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response

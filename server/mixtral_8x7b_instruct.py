@@ -1,5 +1,6 @@
 import json
 import os
+from typing import List
 from dotenv import load_dotenv, find_dotenv
 
 from base_model import Base_Model
@@ -24,9 +25,9 @@ It is hosted by Together AI.
         super().__init__(name, description, parameters, url, token, logger)
 
     
-    def build_prompt(self, requirements):
+    def build_prompt(self, requirements: List[str]) -> str:
         newline = '\n'
-        prompt=f"""<s> [INST] You are an expert on manual software testing.
+        prompt=f"""<s> [INST] You are an expert in manual software testing.
 You will be provided with one or several requirements, you are in charge to describe the test cases necessary to validate these specific requirements.
 You must provide the test cases formatted in JSON as a JSON array whose each element is defined with three text fields defining one test case: "title", "action", and "expected_result".
 Your answer must contain only the JSON.
@@ -36,7 +37,7 @@ Write test cases for the following requirements:
 """
         return prompt
         
-    def generate_test_cases(self, requirements):
+    def prepare_payload(self, requirements: List[str]):
         prompt = self.build_prompt(requirements)
         #params = { f['key']:f['value'] for f in self.parameters if f['value'] is not None }
         payload = {
@@ -47,14 +48,15 @@ Write test cases for the following requirements:
         for f in self.parameters:
             if f['value'] is not None:
                 payload[f['key']] = f['value']
-        try:
-            data = self.query(payload)
-        except Exception as e:
-            print("Error while querying: " + str(e), flush=True)
+        return payload
+    
+    def parse_result(self, data):
         generated_text = data['output']['choices'][0]['text']
         print("generated_text = " + generated_text, flush=True)
         try:
             tests = json.loads(generated_text)
         except json.JSONDecodeError as e:
-            self.logger.log("error", f"Error while trying to parse generated text as JSON\n{e}\nThe generated text is\n{generated_text}")
+            error_message = f"Error while trying to parse generated text as JSON\n{e}\nThe generated text is\n{generated_text}"
+            self.logger.log("error", error_message)
+            raise (error_message) from e
         return tests

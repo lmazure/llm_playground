@@ -1,3 +1,4 @@
+from typing import List
 import requests
 import json
 
@@ -53,3 +54,10 @@ class Base_Model():
                     found = True
             if not found:
                 raise Exception(f"Unknown key: {parameter}")
+
+    def generate_test_cases(self, requirements: List[str]):
+        payload = self.prepare_payload(requirements)
+        data = self.query(payload)
+        tests = self.parse_result(data)
+        return tests
+    
