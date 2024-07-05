@@ -5,14 +5,16 @@ import webbrowser
 import logging
 from zephyr_7b_beta import Zephyr_7b_Beta
 from mixtral_8x7b_instruct import Mixtral_8x7B_Instruct
+from mistral_7b_instruct_03 import Mistral_7B_Instruct_03
 
 from logger import Logger
 
 requirement_list = None
 
 logger = Logger()
-model = Zephyr_7b_Beta(logger)
-modelnew = Mixtral_8x7B_Instruct(logger)
+#model = Zephyr_7b_Beta(logger)
+model = Mixtral_8x7B_Instruct(logger)
+#model = Mistral_7B_Instruct_03(logger)
 
 # ----- Spec file loading
 
