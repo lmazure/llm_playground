@@ -1,0 +1,7 @@
+{ "title" : "A web application",
+  "requirements": [
+    { "id": "1", "text": "The software program takes as inputs three values representing the lengths of the sides of a triangle. The program should determine and output the type(s) of triangle based on the following criteria:\n- Equilateral: All three sides have equal lengths.\n- Isosceles: Two sides have equal lengths, and the third side has a different length.\n- Scalene: All three sides have different lengths.\n- Right: One of the angles is right." },
+    { "id": "2", "text": "The password must adhere to the following rules:\n- contain a lowercase letter\n- contain an uppercase letter\n- contain a number\n- contain a punctuation mark\n- be longer than eight characters\n- not have been changed within the last minute" },
+    { "id": "3", "text": "The user must be able to provide a description of the image they wish to generate and specify the number of proposals to generate. They can then initiate the generation by clicking the \"Generate\" button.\nThe maximum number of proposals depends on the user's subscription plan:\n- \"basic\": 3 proposals\n- \"gold\": 50 proposals\n- \"platinum\": 200 proposals\nIf the number of proposals exceeds the allowable limit of the subscription plan, an error message indicating this must be displayed, and no generation should be initiated." }
+  ]
+}

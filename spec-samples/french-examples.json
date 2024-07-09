@@ -1,0 +1,7 @@
+{ "title" : "A web application",
+  "requirements": [
+    { "id": "1", "text": "Le programme informatique prend en entrée trois valeurs représentant les longueurs des côtés d'un triangle. Le programme doit déterminer et afficher le(s) type(s) de triangle selon les critères suivants :\n- Équilatéral : Les trois côtés ont des longueurs égales.\n- Isocèle : Deux côtés ont des longueurs égales et le troisième côté a une longueur différente.\n- Scalène : Les trois côtés ont des longueurs différentes.\n- Droit : L'un des angles est droit." },
+    { "id": "2", "text": "Le mot de passe doit respecter les règles suivantes :\n- contenir une lettre minuscule\n- contenir une lettre majuscule\n- contenir un chiffre\n- contenir une ponctuation\n- avoir plus que huit lettres\n- ne pas avoir été changé depuis moins d’une minute" },
+    { "id": "3", "text": "L’utilisateur doit pouvoir indiquer une description de l’image qu’il souhaite générer et le nombre de propositions à générer. Il peut ensuite lancer la génération en cliquant sur le bouton « Generate ».\nLe nombre maximum de propositions dépend de l’offre souscrite par l’utilisateur :\n- « basic » : 3 propositions\n- « gold » : 50 propositions\n- « platinum » : 200 propositions\nSi le nombre de propositions dépasse la limite possible de l’offre, un message d’erreur l’indiquant doit être affiché et aucune génération n’est lancée." }
+  ]
+}

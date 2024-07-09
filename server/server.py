@@ -13,8 +13,8 @@ requirement_list = None
 
 logger = Logger()
 #model = Zephyr_7b_Beta(logger)
-model = Mixtral_8x7B_Instruct(logger)
-#model = Mistral_7B_Instruct_03(logger)
+#model = Mixtral_8x7B_Instruct(logger)
+model = Mistral_7B_Instruct_03(logger)
 
 # ----- Spec file loading
 
